@@ -1,0 +1,26 @@
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res/com.penguininc.foodatory"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="@color/default_background">
+    
+    <com.penguininc.foodatory.view.TabView
+        android:id="@+id/tab_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        custom:selected_background="@drawable/tab_selected"
+        custom:unselected_background="@drawable/tab_unselected"
+        custom:tab_holder="@+id/content_holder"
+        custom:tab_number="3"/>
+    
+    <FrameLayout
+        android:layout_marginTop="-5dp"
+        android:id="@id/content_holder"
+        android:layout_height="fill_parent"
+        android:layout_width="match_parent">
+        
+    </FrameLayout>
+    
+</LinearLayout>

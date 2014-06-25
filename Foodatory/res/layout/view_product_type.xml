@@ -1,0 +1,30 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+            
+    <TextView
+        android:id="@+id/fresh_food"
+        android:text="Fresh Food"
+        android:layout_height="95dp"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:padding="10dp" />
+        
+    <TextView
+        android:id="@+id/dry_good"
+        android:text="Dry Good"
+        android:layout_height="95dp"
+        android:padding="10dp"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal" />
+        
+    <TextView
+        android:id="@+id/condiment"
+        android:text="Condiment"
+        android:layout_height="95dp"
+        android:padding="10dp"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal" />
+
+</merge>

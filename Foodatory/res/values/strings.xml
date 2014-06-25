@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Foodatory</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    
+    <string name="navigation_inventory">Pantry</string>
+    <string name="navigation_shopping">Shopping List</string>
+    <string name="navigation_recipes">Recipes</string>
+    <string name="navigation_products">Products</string>
+    <string name="navigation_settings">Settings</string>
+
+    <!--  Nav Drawer Menu Items -->
+    <string-array name="nav_drawer_items">
+        <item>Pantry</item>
+        <item>Shopping List</item>
+        <item>Recipes</item>
+        <item>Products</item>
+        <item>Settings</item>
+    </string-array>
+    
+    <!-- Ways to measure quantity -->
+    <string-array name="measure_quantity_arrays">
+        <item>Quantity</item>
+        <item>Cups</item>
+        <item>Ounces</item>
+    </string-array>
+    
+    <!--  Nav Drawer List Item Icons -->
+    <array name="nav_drawer_icons">
+        <item>@drawable/pantry</item>
+        <item>@drawable/shopping_bag</item>
+        <item>@drawable/recipe</item>
+        <item>@drawable/products</item>
+        <item>@drawable/ic_action_settings</item>
+    </array>
+    
+    <!-- Setting spinner arrays -->
+    <string-array name="notification_frequency">
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+        <item>Never</item>
+    </string-array>
+    
+    <string-array name="pantry_retention">
+        <item>Never</item>
+        <item>1 Day</item>
+        <item>2 Days</item>
+        <item>4 Days</item>
+        <item>1 Week</item>
+        <item>Forever</item>
+    </string-array>
+    
+    <!-- Action Bar -->
+    <string name="action_new">New</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_edit">Edit</string>
+    
+    <!-- Colors -->
+    <color name="default_background">#e1e1e1</color>
+    <color name="counter_text_bg">#636363</color>
+    <color name="list_background_pressed">#4c4c4c</color>
+    <color name="list_background">#222222</color>
+	<color name="list_sub_item">#636363</color>  
+	
+	<color name="dialog_title">#ffffff</color>
+	<color name="dialog_title_background">#477cd5</color>
+	
+	<color name="list_divider">#cccccc</color>
+	
+	<!-- Recipe Colors -->
+	<color name="recipe_action_bar_color">#ededed</color>
+	<color name="recipe_acion_bar_color_pressed">#dddddd</color>
+    <color name="recipe_default">#477cd5</color>
+    <color name="recipe_default_pressed">#5c89d5</color>
+	
+	<!-- Nav Drawer -->
+	<color name="nav_drawer_background">#242424</color>
+	<color name="nav_drawer_selected_item">#29286b</color>
+	<color name="nav_drawer_divider_color">#7b7b7b</color>
+    
+	<!-- Button Colors -->
+	<color name="blue_button">#477cd5</color>
+	<color name="blue_button_pressed">#5c89d5</color>
+	
+	<color name="red_button">#d34848</color>
+	<color name="red_button_pressed">#d36060</color>
+	
+	<color name="silver_button">#cccccc</color>
+	<color name="silver_button_pressed">#d8d8d8</color>
+	
+	<color name="orange_buton">#ffb836</color>
+	<color name="orange_buton_pressed">#d69a2d</color>
+	
+	<color name="yellow_button">#dcdc40</color>
+	<color name="yellow_button_pressed">#cece3c</color>
+	
+	<color name="green_button">#009800</color>
+	<color name="green_button_pressed">#008400</color>
+	
+	<color name="black_button">#1a3a1a</color>
+	<color name="black_button_pressed">#000000</color>
+</resources>

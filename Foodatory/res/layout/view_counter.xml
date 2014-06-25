@@ -1,0 +1,37 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+	<Button
+	 	android:id="@+id/increment"
+	   	android:layout_width="match_parent"
+	   	android:layout_height="0dp"
+	   	android:layout_weight="1"
+	  	android:text="+"
+	   	android:textSize="26sp"
+	   	android:layout_gravity="center"
+	   	style="@style/red_button" />
+	
+	<EditText
+	    android:id="@+id/counter_holder"
+	    android:layout_width="wrap_content"
+	    android:layout_height="0dp"
+	    android:layout_weight="1"
+	    android:text="1"
+	    android:inputType="number"
+	    android:background="@drawable/default_background"
+	    android:paddingLeft="10dp"
+	    android:paddingRight="10dp"
+	    android:layout_gravity="center"
+	    android:textSize="24sp"
+	    android:gravity="center"
+	    android:textStyle="bold"/>
+	    
+	<Button
+	   	android:id="@+id/decrement"
+	   	android:layout_width="match_parent"
+	   	android:layout_height="0dp"
+	   	android:layout_weight="1"
+	   	android:layout_gravity="center" 
+	   	android:text="-"
+	   	android:textSize="26sp"
+	   	style="@style/red_button"/>
+
+</merge>

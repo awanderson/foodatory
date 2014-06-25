@@ -1,0 +1,35 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:paddingBottom="@dimen/default_vertical_margin"
+    android:orientation="vertical">
+    
+    <EditText 
+        android:id="@+id/filter"
+        android:hint="Filter Products"
+        android:layout_marginBottom="@dimen/default_vertical_margin"
+        style="@style/default_edit_text"/>
+    
+	<ListView 
+	    android:id="@+id/listview"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_marginBottom="10dp" />
+	
+	<TextView
+	    android:visibility="gone"
+	    android:id="@+id/empty_list"
+	    android:text="No Available Products"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:textSize="20sp"
+	    android:paddingTop="@dimen/default_padding_top"
+	    android:paddingBottom="@dimen/default_padding_bottom"
+	    android:paddingLeft="@dimen/default_padding"
+	    android:paddingRight="@dimen/default_padding" />
+	
+	<Button
+	    android:id="@+id/add_product"
+	    style="@style/blue_button"
+	    android:text="Add Product" />
+</LinearLayout>

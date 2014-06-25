@@ -1,0 +1,51 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:dslv="http://schemas.android.com/apk/res/com.penguininc.foodatory"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    
+	<com.mobeta.android.dslv.DragSortListView
+    	android:id="@+id/listview"
+    	android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:paddingTop="0dp"
+    	android:paddingBottom="80dp"
+    	android:paddingLeft="15dp"
+    	android:paddingRight="15dp"
+    	android:dividerHeight="1dp"
+    	android:divider="@color/list_divider"
+    	dslv:drag_enabled="true"
+    	dslv:collapsed_height="2dp"
+    	dslv:drag_scroll_start="0.33"
+    	dslv:max_drag_scroll_speed="0.5"
+    	dslv:float_alpha=".8"
+    	dslv:slide_shuffle_speed="0.3"
+    	dslv:track_drag_sort="false"
+    	dslv:use_default_controller="true"
+    	dslv:drag_handle_id="@+id/drag_handle"
+    	dslv:sort_enabled="true"
+    	dslv:remove_enabled="true"
+    	dslv:drag_start_mode="onDown"
+    	dslv:remove_mode="flingRemove"
+    	dslv:float_background_color="#00ffffff" />
+    
+    <TextView 
+        android:visibility="gone"
+        android:id="@+id/empty_list"
+        android:textSize="20sp"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="No Directions!"
+        android:layout_gravity="center"
+        android:paddingTop="@dimen/default_padding_top"
+        android:paddingBottom="80dp"/>
+    
+    <Button
+        android:id="@+id/new_direction"
+        android:text="Add Direction"
+        android:layout_marginTop="-70dp"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        style="@style/blue_button"/>
+    
+</LinearLayout>

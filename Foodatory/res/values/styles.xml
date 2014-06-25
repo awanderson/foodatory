@@ -1,0 +1,163 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+    <style name="AppBaseTheme" parent="@android:style/Theme.Holo.Light.DarkActionBar">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    	<item name="android:actionBarStyle">@style/RecipeActionBar</item>
+        <item name="android:actionBarTabStyle">@style/RecipeActionBarTabs</item>
+        <item name="android:actionBarTabTextStyle">@style/RecipeActionBarTabText</item>
+        <item name="android:actionBarTabBarStyle">@style/RecipeActionBarTabBar</item>
+    
+    </style>
+    
+    <style name="RecipeTheme" parent="AppTheme">
+        <item name="android:actionBarStyle">@style/RecipeActionBar</item>
+        <item name="android:actionBarTabStyle">@style/RecipeActionBarTabs</item>
+        <item name="android:actionBarTabTextStyle">@style/RecipeActionBarTabText</item>
+        <item name="android:actionBarTabBarStyle">@style/RecipeActionBarTabBar</item>
+    </style>
+    
+    <style name="RecipeActionBar"
+           parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/dialog_title_background</item>
+        <item name="android:backgroundStacked">@color/dialog_title_background</item>
+        <item name="android:backgroundSplit">@color/dialog_title_background</item>
+    </style>
+    
+    <style name="RecipeActionBarTabs"
+        parent="@android:style/Widget.Holo.ActionBar.TabView">
+        <item name="android:background">@drawable/tab_background</item>
+    </style>
+    
+    <style name="RecipeActionBarTabBar" parent="@android:style/Widget.Holo.ActionBar.TabBar">
+        <item name="android:showDividers">none</item>
+    </style>
+    
+    <style name="RecipeActionBarTabText"
+           parent="@android:style/Widget.ActionBar.TabText">
+        <item name="android:textColor">@color/recipe_default</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <!-- The textColor property is backward compatible with the Support Library -->
+    </style>
+    
+    <style name="default_edit_text">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/default_horizontal_margin</item>
+        <item name="android:layout_marginRight">@dimen/default_horizontal_margin</item>
+        <item name="android:layout_marginTop">@dimen/default_vertical_margin</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:background">@drawable/default_background</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:inputType">textCapSentences</item>
+    </style>
+    
+    <style name="multiline_edit_text">
+       <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/default_horizontal_margin</item>
+        <item name="android:layout_marginRight">@dimen/default_horizontal_margin</item>
+        <item name="android:layout_marginTop">@dimen/default_vertical_margin</item>
+        <item name="android:background">@drawable/default_background</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:inputType">textCapSentences|textMultiLine</item> 
+        <item name="android:scrollbars">vertical</item>
+    </style>
+    
+    <style name="default_button">
+        <item name="android:layout_marginLeft">@dimen/default_horizontal_margin</item>
+        <item name="android:layout_marginRight">@dimen/default_horizontal_margin</item>
+        <item name="android:layout_marginTop">@dimen/default_vertical_margin</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_height">@dimen/default_button_height</item>
+        <item name="android:layout_width">fill_parent</item>
+    </style>
+    
+    <style name="blue_button" parent="@style/default_button">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@drawable/button_background</item>
+    </style>
+    
+    <style name="red_button" parent="@style/default_button">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@drawable/button_red_background</item>
+    </style>
+    
+    <style name="silver_button" parent="@style/default_button">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:background">@drawable/button_silver_background</item>
+    </style>
+    
+    <style name="green_button" parent="@style/default_button">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@drawable/button_green_background</item>
+    </style>
+    
+    <style name="default_dialog_title">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+    </style>
+    
+    <style name="blue_dialog_title" parent="default_dialog_title">
+        <item name="android:background">@color/dialog_title_background</item>
+        <item name="android:textColor">@color/dialog_title</item>
+    </style>
+    
+    <style name="expand_text_view">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+    
+    <style name="setting_wrapper">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:padding">10dp</item>
+    </style>
+    
+    <style name="setting_main_title">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+    
+    <style name="setting_description">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/list_sub_item</item>
+    </style>
+    
+    <style name="default_header">
+    	<item name="android:layout_width">match_parent</item>
+    	<item name="android:layout_height">wrap_content</item>
+    	<item name="android:textSize">22sp</item>
+    	<item name="android:textStyle">bold</item>
+    	<item name="android:textColor">@color/blue_button</item>
+    </style>
+
+</resources>

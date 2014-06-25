@@ -1,0 +1,85 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_card">
+   
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/inventory_main_content_wrapper"
+        android:paddingBottom="8dp"
+        android:paddingRight="8dp"
+        android:paddingLeft="8dp">
+        
+        <TextView
+	        android:id="@+id/inventory_name"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textSize="26sp" />
+    
+     	<TextView
+        	android:id="@+id/inventory_expire_date"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:textSize="16sp"
+        	android:textColor="@color/list_sub_item"
+        	android:layout_below="@id/inventory_name"/>
+    
+	   <TextView
+		    android:id="@+id/inventory_qty"
+		    android:layout_width="50dp"
+		    android:layout_height="wrap_content"
+		    android:textSize="22sp"
+		    android:padding="10dp"
+		    android:textColor="@android:color/white"
+		    android:layout_gravity="center"
+		    android:layout_alignParentRight="true" 
+		    android:layout_marginRight="5dp"
+		    android:gravity="center"
+		    android:layout_centerVertical="true"/>
+        
+    </RelativeLayout>
+    
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:background="@drawable/expandable_background"
+       	android:id="@+id/expandable"
+       	android:visibility="gone"
+       	android:orientation="horizontal"
+       	android:layout_marginBottom="3dp">
+        
+        <TextView
+            android:focusable="false"
+            android:id="@+id/decrement"
+            android:drawableTop="@drawable/ic_action_minus"
+            android:text="Decrement"
+            style="@style/expand_text_view" />
+        
+        <TextView
+            android:id="@+id/increment"
+            android:drawableTop="@drawable/ic_action_new"
+            android:text="Increment"
+            style="@style/expand_text_view" />
+        
+        <TextView
+            android:id="@+id/delete"
+            android:drawableTop="@drawable/ic_action_discard"
+            android:text="Delete"
+            style="@style/expand_text_view" />
+        
+        <TextView
+            android:id="@+id/shopping_list"
+            android:drawableTop="@drawable/ic_action_view_as_list"
+            android:text="Shopping List"
+            style="@style/expand_text_view" />
+        
+        
+    </LinearLayout>
+
+</LinearLayout>

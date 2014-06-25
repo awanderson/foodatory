@@ -1,0 +1,62 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="15dp"
+    android:paddingBottom="20dp"
+    android:background="@drawable/bg_card" >
+    
+    <TextView
+        android:layout_marginLeft="10dp"
+        android:id="@+id/shopping_list_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+    
+    <TextView
+        android:id="@+id/shopping_list_quantity_label"
+        android:text="Quantity:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/shopping_list_name"
+        android:textColor="@color/list_sub_item"
+        android:textSize="16sp"
+        android:layout_marginLeft="10dp"/>
+    
+    <TextView
+        android:id="@+id/shopping_list_quantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/shopping_list_name"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@id/shopping_list_quantity_label"
+        android:textColor="@color/list_sub_item"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/shopping_list_remove"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/textview_clickable"
+        android:textColor="@color/list_sub_item"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:text="X"
+        android:padding="8dp"
+        android:layout_marginRight="10dp" />
+    
+    <CheckedTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="2dp"
+        android:id="@+id/shopping_list_checked"
+        android:layout_toLeftOf="@id/shopping_list_remove"
+        android:layout_centerVertical="true"
+        android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+        android:clickable="true" />
+    
+    
+</RelativeLayout>

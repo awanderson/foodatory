@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CounterView">
+        <attr name="startingValue" format="integer" />
+    </declare-styleable>
+    
+    <declare-styleable name="ProductTypeView">
+    </declare-styleable>
+    
+    <declare-styleable name="TabView">
+        <attr name="selected_background" format="reference" />
+        <attr name="unselected_background" format="reference" />
+        <attr name="tab_holder" format="reference" />
+        <attr name="tab_number" format="integer" />
+    </declare-styleable>
+    
+</resources>

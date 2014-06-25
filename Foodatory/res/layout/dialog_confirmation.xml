@@ -1,0 +1,45 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    
+    
+    
+    <TextView 
+        android:id="@+id/caption"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:padding="@dimen/default_padding"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"/>
+    
+    <LinearLayout 
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:orientation="horizontal">
+        
+        <Button
+            style="@style/blue_button"
+            android:id="@+id/yes"
+            android:text="Yes"
+            android:layout_marginBottom="@dimen/default_vertical_margin"
+            android:layout_width="wrap_content"
+            android:layout_marginRight="5dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp" />
+        
+        <Button
+            style="@style/red_button"
+            android:id="@+id/no"
+            android:text="No"
+            android:layout_marginBottom="@dimen/default_vertical_margin"
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp" />
+        
+    </LinearLayout>
+    
+</LinearLayout>
