@@ -2,15 +2,15 @@ package com.penguininc.foodatory.templates;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.penguininc.foodatory.MainActivity;
 import com.penguininc.foodatory.interfaces.MainActivityInterface;
+import com.penguininc.foodatory.view.OrmLiteFragment;
 
-public abstract class HomeScreenFragment extends Fragment {
+public abstract class HomeScreenFragment extends OrmLiteFragment {
 	
 	protected MainActivityInterface mMainActivityListener;
 	

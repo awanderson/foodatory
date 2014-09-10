@@ -1,13 +1,11 @@
 package com.penguininc.foodatory.dailog;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
-import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
-import android.content.Loader;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,20 +22,18 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.penguininc.foodatory.InventoryFragment;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.penguininc.foodatory.R;
 import com.penguininc.foodatory.adapter.SimpleProductListAdapter;
-import com.penguininc.foodatory.sqlite.helper.RecipeProductHelper;
-import com.penguininc.foodatory.sqlite.loader.GenericLoaderCallbacks;
-import com.penguininc.foodatory.sqlite.model.Product;
+import com.penguininc.foodatory.orm.object.Product;
 import com.penguininc.foodatory.sqlite.model.Recipe;
 import com.penguininc.foodatory.templates.BasicActivity;
+import com.penguininc.foodatory.view.OrmLiteDialogFragment;
 
-public class ProductPickerDialog extends DialogFragment {
+public class ProductPickerDialog extends OrmLiteDialogFragment {
 	
 	private ListView listview;
 	SimpleProductListAdapter adapter;
-	LoaderCallbacks<ArrayList<Product>> callbacks;
 	long mRecipeId;
 	TextView emptyView;
 	EditText mFilter;
@@ -68,7 +64,6 @@ public class ProductPickerDialog extends DialogFragment {
 		
 		mNewProductRequestCode = getArguments().getInt(NEW_PRODUCT_REQUEST_CODE_KEY, 0);
 		
-		
 		View view = inflater.inflate(R.layout.dialog_new_inventory, container);
 		
 		mFilter = (EditText)view.findViewById(R.id.filter);
@@ -96,29 +91,13 @@ public class ProductPickerDialog extends DialogFragment {
 		listview.setTextFilterEnabled(true);
 		listview.setClickable(true);
 		emptyView = (TextView)view.findViewById(R.id.empty_list);
-		callbacks = (new GenericLoaderCallbacks<Void, ArrayList<Product>>(getActivity(), null){
-
-			@Override
-			protected ArrayList<Product> doInBackground(Void data) {
-				return (new RecipeProductHelper(context)).getProductsNoInRecipe(mRecipeId);
-			}
-			
-			@Override
-			protected void loadFinished(ArrayList<Product> output) {
-				adapter = new SimpleProductListAdapter(getActivity(), output);
-				listview.setEmptyView(emptyView);
-				listview.setAdapter(adapter);
-				mFilter.addTextChangedListener(mTextWatcher);
-			}
-			
-			@Override
-			protected void resetLoader(Loader<ArrayList<Product>> args) {
-				listview.setAdapter(null);
-			}
-			
-		});
-
-		getLoaderManager().initLoader(0, null, callbacks);
+		RuntimeExceptionDao<Product, Integer> productDao = getHelper()
+				.getProductRuntimeExceptionDao();
+		List<Product> products = productDao.queryForAll();
+		adapter = new SimpleProductListAdapter(getActivity(), products);
+		listview.setEmptyView(emptyView);
+		listview.setAdapter(adapter);
+		mFilter.addTextChangedListener(mTextWatcher);
 		
 		listview.setOnItemClickListener(new OnItemClickListener() {
 
@@ -126,10 +105,8 @@ public class ProductPickerDialog extends DialogFragment {
 			public void onItemClick(AdapterView<?> parent, View v, int position,
 					long id) {
 				Intent i = new Intent();
-				long productId = adapter.getItem(position).getId();
-				int productFreshness = (int) adapter.getItem(position).getFreshLength();
-				i.putExtra(Product.PRODUCT_ID, productId);
-				i.putExtra(Product.PRODUCT_FRESHNESS, productFreshness);
+				Product product = adapter.getItem(position);
+				i.putExtra(Product.KEY, product);
 				getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, i);
 				dismiss();
 			}
@@ -137,7 +114,6 @@ public class ProductPickerDialog extends DialogFragment {
 		});
 		
 		Button addProduct = (Button)view.findViewById(R.id.add_product);
-		final Fragment mThis = this;
 		//launch new product dialog when add product is clicked
 		addProduct.setOnClickListener(new OnClickListener() {
 			

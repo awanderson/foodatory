@@ -1,7 +1,5 @@
 package com.penguininc.foodatory;
 
-import android.app.LoaderManager.LoaderCallbacks;
-import android.content.Loader;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,21 +11,18 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.penguininc.foodatory.listener.ProductTypeSwitchListener;
-import com.penguininc.foodatory.sqlite.helper.ProductHelper;
-import com.penguininc.foodatory.sqlite.loader.GenericLoaderCallbacks;
-import com.penguininc.foodatory.sqlite.model.Product;
+import com.penguininc.foodatory.orm.object.Product;
 import com.penguininc.foodatory.templates.BasicFragment;
 import com.penguininc.foodatory.view.CounterView;
 import com.penguininc.foodatory.view.ProductTypeView;
 
 public class EditProductFragment extends BasicFragment {
 
-	long mProductId;
 	
+	Product mProduct;
 	EditText mProductName;
 	CounterView mProductQty;
 	CounterView mProductFreshness;
@@ -47,7 +42,9 @@ public class EditProductFragment extends BasicFragment {
 		//set title
 		changeTitle("Edit Product");
 		
-		mProductId = bundle.getLong(Product.PRODUCT_ID);
+		// get our product that was sent in the bundle
+		mProduct = (Product)bundle.getSerializable(Product.KEY);
+		
 		View view = super.onCreateView(inflater, container, savedInstanceState);
 		mProductName = (EditText)view.findViewById(R.id.product_name);
 		mProductType = (ProductTypeView)view.findViewById(R.id.product_type);
@@ -74,32 +71,11 @@ public class EditProductFragment extends BasicFragment {
 		mProductFreshness = (CounterView)view.findViewById(R.id.product_freshness);
 		mProductFreshnessWrapper = (LinearLayout)view.findViewById(R.id.product_freshness_wrapper);
 		
-		//load current product info
-		LoaderCallbacks<Product> callbacks = (new GenericLoaderCallbacks<Long, Product>(getActivity(), mProductId){
-
-			@Override
-			protected Product doInBackground(Long data) {
-				return (new ProductHelper(context)).getProduct(data);
-			}
-
-			@Override
-			protected void loadFinished(Product p) {
-				mProductName.setText(p.getProductName());
-				mProductQty.setValue(p.getQty());
-				mProductFreshness.setValue((int)p.getFreshLength());
-				mProductType.setType(p.getType());
-				
-			}
-			
-
-			@Override
-			protected void resetLoader(Loader<Product> args) {
-				
-			}
-			
-		});
-		
-		getLoaderManager().initLoader(0, null, callbacks);
+		// Set info
+		mProductName.setText(mProduct.getProductName());
+		mProductQty.setValue(mProduct.getQty());
+		mProductFreshness.setValue((int)mProduct.getFreshLength());
+		mProductType.setType(mProduct.getType());
 		
 		Button save = (Button)view.findViewById(R.id.save);
 		save.setVisibility(View.GONE);
@@ -125,26 +101,13 @@ public class EditProductFragment extends BasicFragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		
 		if(item.getItemId() == R.id.action_delete) {
-			LoaderCallbacks<Void> callbacks = (new GenericLoaderCallbacks<Long, Void>(getActivity(), mProductId){
-
-				@Override
-				protected Void doInBackground(Long data) {
-					(new ProductHelper(context)).deleteProduct(data);
-					return null;
-				}
-
-				@Override
-				protected void loadFinished(Void output) {
-					getActivity().finish();
-					Toast.makeText(getActivity(),"Product Removed",Toast.LENGTH_SHORT).show();
-				}
-
-				@Override
-				protected void resetLoader(Loader<Void> args) {
-					
-				}
-			});
-			getLoaderManager().initLoader(2, null, callbacks);
+			
+			if(mProduct != null) {
+				RuntimeExceptionDao<Product, Integer> dao = 
+						getHelper().getProductRuntimeExceptionDao();
+				dao.delete(mProduct);
+				getActivity().finish();
+			}
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
@@ -154,36 +117,20 @@ public class EditProductFragment extends BasicFragment {
 	@Override
 	public void onPause() {
 		super.onPause();
-		String product_name = mProductName.getText().toString();
-		int product_qty = mProductQty.getValue();
-		Long product_freshness = (long)mProductFreshness.getValue();
-		int product_type = mProductType.getType();
-		Product p = new Product();
-		p.setFreshLength(product_freshness);
-		p.setProductName(product_name);
-		p.setQty(product_qty);
-		p.setId(mProductId);
-		p.setType(product_type);
-		
-		LoaderCallbacks<Integer> callbacks = (new GenericLoaderCallbacks<Product, Integer>(getActivity(), p){
-
-			@Override
-			protected Integer doInBackground(Product data) {
-				return (new ProductHelper(context)).updateProduct(data);
-			}
-
-			@Override
-			protected void loadFinished(Integer output) {
-				getActivity().finish();
-				Toast.makeText(getActivity(),"Product Saved",Toast.LENGTH_SHORT).show();
-			}
-
-			@Override
-			protected void resetLoader(Loader<Integer> args) {
-			}
-
+		if(mProduct != null) {
+			String product_name = mProductName.getText().toString();
+			int product_qty = mProductQty.getValue();
+			int product_freshness = mProductFreshness.getValue();
+			int product_type = mProductType.getType();
+			mProduct.setFreshLength(product_freshness);
+			mProduct.setProductName(product_name);
+			mProduct.setQty(product_qty);
+			mProduct.setType(product_type);
 			
-		});
-		getLoaderManager().initLoader(1, null, callbacks);
+			RuntimeExceptionDao<Product, Integer> dao = 
+					getHelper().getProductRuntimeExceptionDao();
+			dao.update(mProduct);
+		}
+		
 	}
 }

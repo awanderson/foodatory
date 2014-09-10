@@ -1,8 +1,7 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:paddingBottom="@dimen/default_vertical_margin"
-    android:orientation="vertical">
+    android:paddingBottom="@dimen/default_vertical_margin">
     
     <EditText 
         android:id="@+id/filter"
@@ -10,11 +9,19 @@
         android:layout_marginBottom="@dimen/default_vertical_margin"
         style="@style/default_edit_text"/>
     
+    <Button
+	    android:id="@+id/add_product"
+	    style="@style/blue_button"
+	    android:text="Add Product"
+	    android:layout_alignParentBottom="true" />
+    
 	<ListView 
 	    android:id="@+id/listview"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
-	    android:layout_marginBottom="10dp" />
+	    android:layout_marginBottom="10dp"
+	    android:layout_below="@id/filter"
+	    android:layout_above="@id/add_product" />
 	
 	<TextView
 	    android:visibility="gone"
@@ -26,10 +33,9 @@
 	    android:paddingTop="@dimen/default_padding_top"
 	    android:paddingBottom="@dimen/default_padding_bottom"
 	    android:paddingLeft="@dimen/default_padding"
-	    android:paddingRight="@dimen/default_padding" />
+	    android:paddingRight="@dimen/default_padding"
+	    android:layout_below="@id/filter"
+	    android:layout_above="@id/add_product"
+	    android:layout_centerInParent="true" />
 	
-	<Button
-	    android:id="@+id/add_product"
-	    style="@style/blue_button"
-	    android:text="Add Product" />
-</LinearLayout>
+</RelativeLayout>

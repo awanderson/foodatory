@@ -12,7 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.penguininc.foodatory.sqlite.model.Product;
+import com.penguininc.foodatory.orm.object.Product;
 import com.penguininc.foodatory.templates.HomeScreenFragment;
 import com.penguininc.foodatory.view.Tab;
 import com.penguininc.foodatory.view.TabView;
@@ -20,7 +20,6 @@ import com.penguininc.foodatory.view.TabView;
 public class ProductsFragment extends HomeScreenFragment{
 
 	private final static int GET_PRODUCTS = 0;
-	LoaderCallbacks<ArrayList<Product>> callbacks;
 	private int saved_tab_state;
 	TabView<ProductListFragment, ProductListFragment, ProductListFragment> tabs;
 	Tab<ProductListFragment> tab1;

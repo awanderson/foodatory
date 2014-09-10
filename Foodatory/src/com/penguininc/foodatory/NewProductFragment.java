@@ -1,8 +1,10 @@
 package com.penguininc.foodatory;
 
-import android.app.LoaderManager;
-import android.app.LoaderManager.LoaderCallbacks;
-import android.content.Loader;
+/**
+ * Not in used anymore,
+ * replaced by NewProductDailog
+ */
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,20 +13,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
+import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.penguininc.foodatory.listener.ProductTypeSwitchListener;
-import com.penguininc.foodatory.sqlite.helper.ProductHelper;
-import com.penguininc.foodatory.sqlite.loader.GenericLoaderCallbacks;
-import com.penguininc.foodatory.sqlite.model.Product;
+import com.penguininc.foodatory.orm.object.Product;
 import com.penguininc.foodatory.templates.BasicFragment;
 import com.penguininc.foodatory.view.CounterView;
 import com.penguininc.foodatory.view.ProductTypeView;
 
 public class NewProductFragment extends BasicFragment {
 
-	private static final int NEW_PRODUCT = 0;
-	
 	EditText mProductName;
 	CounterView mProductQty;
 	CounterView mProductFreshness;
@@ -71,34 +69,17 @@ public class NewProductFragment extends BasicFragment {
 			public void onClick(View v) {
 				String product_name = mProductName.getText().toString();
 				int product_qty = mProductQty.getValue();
-				Long product_freshness = (long)mProductFreshness.getValue();
+				int product_freshness = mProductFreshness.getValue();
 				int product_type = mProductType.getType();
 				Product p = new Product();
 				p.setFreshLength(product_freshness);
 				p.setProductName(product_name);
 				p.setQty(product_qty);
 				p.setType(product_type);
-				LoaderManager lm = getLoaderManager();
-				lm.initLoader(NEW_PRODUCT, null, (LoaderCallbacks<Long>)
-						(new GenericLoaderCallbacks<Product, Long>(getActivity(), p) {
-
-					@Override
-					protected Long doInBackground(Product data) {
-						return (new ProductHelper(context)).createProduct((data));
-					}
-
-					@Override
-					protected void loadFinished(Long output) {
-						getActivity().finish();
-						Toast.makeText(getActivity(),"Product Added",Toast.LENGTH_SHORT).show();
-					}
-
-					@Override
-					protected void resetLoader(Loader<Long> args) {
-						
-					}
-					
-				}));
+				
+				RuntimeExceptionDao<Product, Integer> dao = 
+						getHelper().getProductRuntimeExceptionDao();
+				dao.create(p);
 			}
 		});
 		

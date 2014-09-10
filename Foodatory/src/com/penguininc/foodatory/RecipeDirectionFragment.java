@@ -9,6 +9,7 @@ import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
 import android.content.Loader;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ import com.penguininc.foodatory.sqlite.loader.GenericLoaderCallbacks;
 import com.penguininc.foodatory.sqlite.model.Direction;
 import com.penguininc.foodatory.sqlite.model.Recipe;
 import com.penguininc.foodatory.templates.BasicFragment;
+import com.penguininc.foodatory.utilities.ListviewUtilities;
 
 public class RecipeDirectionFragment extends BasicFragment {
 
@@ -83,6 +85,7 @@ public class RecipeDirectionFragment extends BasicFragment {
 
 							@Override
 							protected void loadFinished(Void output) {
+								ListviewUtilities.setListViewHeightBasedOnChildren(listview);
 							}
 
 							@Override
@@ -114,9 +117,33 @@ public class RecipeDirectionFragment extends BasicFragment {
 		Bundle b = getArguments();
 		mRecipeId = b.getLong(Recipe.RECIPE_ID);
 		
+		Button newDirection = (Button)view.findViewById(R.id.new_direction);
+		
+		mThis = this;
+		newDirection.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				DialogFragment frag = new NewDirectionDialog();
+				frag.setTargetFragment(mThis, NEW_DIRECTION);
+				frag.setArguments(getArguments());
+				frag.show(getFragmentManager().beginTransaction(), "New Direction");
+			}
+		});
+		
 		listview = (DragSortListView)view.findViewById(R.id.listview);
 		listview.setDropListener(onDrop);
 		listview.setRemoveListener(onRemove);
+		
+		/*
+		//disable scroll by default, re-enable later
+		listview.setOnTouchListener(new OnTouchListener() {
+
+		    public boolean onTouch(View v, MotionEvent event) {
+		        return (event.getAction() == MotionEvent.ACTION_MOVE);
+		    }
+		});
+		*/
 		emptyView = (TextView)view.findViewById(R.id.empty_list);
 		
 		callbacks = (new GenericLoaderCallbacks<Long,
@@ -134,6 +161,7 @@ public class RecipeDirectionFragment extends BasicFragment {
 							adapter = new DirectionListAdapter(getActivity(), output);
 							listview.setEmptyView(emptyView);
 							listview.setAdapter(adapter);
+							ListviewUtilities.setListViewHeightBasedOnChildren(listview);
 						}
 						
 					}
@@ -151,21 +179,9 @@ public class RecipeDirectionFragment extends BasicFragment {
 			getLoaderManager().initLoader(GET_DIRECTIONS, null, callbacks);
 		} else {
 			listview.setAdapter(adapter);
+			ListviewUtilities.setListViewHeightBasedOnChildren(listview);
 		}
 		
-		Button newDirection = (Button)view.findViewById(R.id.new_direction);
-		
-		mThis = this;
-		newDirection.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				DialogFragment frag = new NewDirectionDialog();
-				frag.setTargetFragment(mThis, NEW_DIRECTION);
-				frag.setArguments(getArguments());
-				frag.show(getFragmentManager().beginTransaction(), "New Direction");
-			}
-		});
 		return view;
 		
 	}
@@ -203,6 +219,7 @@ public class RecipeDirectionFragment extends BasicFragment {
 								adapter.directions.add(direction);
 								adapter.notifyDataSetChanged();
 								getLoaderManager().destroyLoader(NEW_LOADER_VALUE);
+								ListviewUtilities.setListViewHeightBasedOnChildren(listview);
 							}
 
 							@Override
@@ -272,4 +289,6 @@ public class RecipeDirectionFragment extends BasicFragment {
 		listview.setAdapter(null);
 	}
 	
+	public void enableScroll() {
+	}
 }

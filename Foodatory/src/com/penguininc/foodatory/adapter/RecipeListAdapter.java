@@ -9,9 +9,9 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +23,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 import com.penguininc.foodatory.R;
 import com.penguininc.foodatory.sqlite.model.Recipe;
 import com.penguininc.foodatory.utilities.ImageRounder;
@@ -32,9 +39,11 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 	public final static String DEBUG_TAG = "RecipeListAdapter";
 	
 	private Context context;
+	private ImageLoader imageLoader;
 	private ArrayList<Recipe> recipes;
 	private ArrayList<ImageView> thumbnails;
 	private ArrayList<String> imageNames;
+	private ArrayList<Bitmap> imageBitmaps;
 	
 	public RecipeListAdapter(Context context, ArrayList<Recipe> recipes) {
 		super(context, R.layout.list_item_recipe, recipes);
@@ -42,100 +51,131 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 		this.recipes = recipes;
 		thumbnails = new ArrayList<ImageView>();
 		imageNames = new ArrayList<String>();
+		imageBitmaps = new ArrayList<Bitmap>(recipes.size());
+		for(int i = 0; i < recipes.size(); i++) {
+			imageBitmaps.add(i, null);
+		}
+		imageLoader = ImageLoader.getInstance();
+		// Create global configuration and initialize ImageLoader with this configuration
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration
+        		.Builder(context).build();
+        imageLoader.init(config);
+		
 	}
 	
 	
 	@SuppressLint("NewApi")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		ViewHolder mHolder = null;
 		if (convertView == null) {
-	           LayoutInflater mInflater = (LayoutInflater)
-	                   context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-	           convertView = mInflater.inflate(R.layout.list_item_recipe, null);
-	    }
+			mHolder = new ViewHolder();
+	        LayoutInflater mInflater = (LayoutInflater)
+	        		  context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+	        convertView = mInflater.inflate(R.layout.list_item_recipe, null);
+	        mHolder.recipe_name = (TextView) convertView.findViewById(R.id.recipe_name);
+	        mHolder.thumbnail = (ImageView) convertView.findViewById(R.id.recipe_thumbnail);
+	        convertView.setTag(mHolder);
+		} else {
+			mHolder = (ViewHolder)convertView.getTag();
+		}
 		 
-		TextView mRecipeName = (TextView) convertView.findViewById(R.id.recipe_name);
-		ImageView mThumbnail = (ImageView) convertView.findViewById(R.id.recipe_thumbnail);
 		String imageName = recipes.get(position).getImage();
-		thumbnails.add(position, mThumbnail);
+		thumbnails.add(position, mHolder.thumbnail);
 		imageNames.add(position, imageName);
 		final int p = position;
-		ViewTreeObserver vto = mThumbnail.getViewTreeObserver();
-		vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+		ViewTreeObserver vto = mHolder.thumbnail.getViewTreeObserver();
+		if(mHolder.thumbnail.getHeight() == 0) {
+			Log.d(DEBUG_TAG, "No height");
+			vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 
-		    @Override
-		    public void onGlobalLayout() {
-		    	setPic(p);
-		        ViewTreeObserver obs = thumbnails.get(p).getViewTreeObserver();
+			    @Override
+			    public void onGlobalLayout() {
+			    	setPic(p);
+			        ViewTreeObserver obs = thumbnails.get(p).getViewTreeObserver();
 
-		        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-		            obs.removeOnGlobalLayoutListener(this);
-		        } else {
-		            obs.removeGlobalOnLayoutListener(this);
-		        }
-		    }
+			        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+			            obs.removeOnGlobalLayoutListener(this);
+			        } else {
+			            obs.removeGlobalOnLayoutListener(this);
+			        }
+			    }
 
-		});
-		mRecipeName.setText(recipes.get(position).getName());
+			});
+		} else {
+			Log.d(DEBUG_TAG, "Setting pic");
+			setPic(p);
+		}
+		
+		mHolder.recipe_name.setText(recipes.get(position).getName());
 		return convertView;
 	}
 	
-	private void setPic(int position) {
-		int targetW = thumbnails.get(position).getWidth();
-	    int targetH = thumbnails.get(position).getHeight();
+	private void setPic(final int position) {
 
-	    Log.d(DEBUG_TAG, "targetH = " + targetH + " targetW = "+ targetW);
+		final ImageView imageView = thumbnails.get(position);
+		final int targetW = imageView.getWidth();
+	    final int targetH = imageView.getHeight();
+	    ImageSize targetSize = new ImageSize(targetW, targetH);
 	    
-	    Bitmap bitmap;
-	    if(imageNames.get(position) == null || imageNames.get(position) == "") {
-	    	bitmap = getColorBitmap(targetW, targetH);
-	    } else {
-	    	// Get the dimensions of the bitmap
-		    BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-		    bmOptions.inJustDecodeBounds = true;
-		    BitmapFactory.decodeFile(imageNames.get(position), bmOptions);
-		    int photoW = bmOptions.outWidth;
-		    int photoH = bmOptions.outHeight;
+	    BitmapProcessor postProcessor = new BitmapProcessor() {
+			
+			@Override
+			public Bitmap process(Bitmap bitmap) {
+				Bitmap dstBmp;
+				if (bitmap.getWidth() >= bitmap.getHeight()){
 
-		    // Determine how much to scale down the image
-		    int scaleFactor = Math.max(photoW/targetW, photoH/targetH);
+			    	  dstBmp = Bitmap.createBitmap(
+			    	     bitmap, 
+			    	     bitmap.getWidth()/2 - bitmap.getHeight()/2,
+			    	     0,
+			    	     bitmap.getHeight(), 
+			    	     bitmap.getHeight()
+			    	     );
 
-		    // Decode the image file into a Bitmap sized to fill the View
-		    bmOptions.inJustDecodeBounds = false;
-		    bmOptions.inSampleSize = scaleFactor;
-		    bmOptions.inPurgeable = true;
+			    	}else{
 
-		    bitmap = BitmapFactory.decodeFile(imageNames.get(position), bmOptions);
-	    }
-	    if(bitmap == null) {
-	    	bitmap = getColorBitmap(targetW, targetH);
-	    }
+			    	  dstBmp = Bitmap.createBitmap(
+			    	     bitmap,
+			    	     0, 
+			    	     bitmap.getHeight()/2 - bitmap.getWidth()/2,
+			    	     bitmap.getWidth(),
+			    	     bitmap.getWidth() 
+			    	     );
+			    	}
+			    dstBmp = ImageRounder.getRoundedCornerBitmap(dstBmp, dstBmp.getHeight());
+			    return dstBmp;
+			}
+		};
+		DisplayImageOptions options = new DisplayImageOptions.Builder()
+	    		.postProcessor(postProcessor)
+	    		.showImageForEmptyUri(new BitmapDrawable(context.getResources(),
+	    				getColorBitmap(targetW, targetH)))
+	    		.cacheInMemory(true)
+	    		.showImageOnFail(new BitmapDrawable(context.getResources(),
+	    				getColorBitmap(targetW, targetH)))
+	    		.build();
 	    
-	    // crop from center of image to form a square
-	    Bitmap dstBmp;
-	    if (bitmap.getWidth() >= bitmap.getHeight()){
-
-	    	  dstBmp = Bitmap.createBitmap(
-	    	     bitmap, 
-	    	     bitmap.getWidth()/2 - bitmap.getHeight()/2,
-	    	     0,
-	    	     bitmap.getHeight(), 
-	    	     bitmap.getHeight()
-	    	     );
-
-	    	}else{
-
-	    	  dstBmp = Bitmap.createBitmap(
-	    	     bitmap,
-	    	     0, 
-	    	     bitmap.getHeight()/2 - bitmap.getWidth()/2,
-	    	     bitmap.getWidth(),
-	    	     bitmap.getWidth() 
-	    	     );
-	    	}
-	    //dstBmp = Bitmap.createBitmap(dstBmp, photoW/2, photoH/2, targetW, targetH);
-	    dstBmp = ImageRounder.getRoundedCornerBitmap(dstBmp, dstBmp.getHeight());
-	    thumbnails.get(position).setImageBitmap(dstBmp);
+		Log.d(DEBUG_TAG, "imagename = " + imageNames.get(position));
+		
+	    //bitmap = getColorBitmap(targetW, targetH);
+		imageLoader.loadImage("file://"+imageNames.get(position), 
+				targetSize,
+				options,
+				new SimpleImageLoadingListener() {
+			
+			@Override
+		    public void onLoadingComplete(String imageUri, View view, Bitmap bitmap) {
+				thumbnails.get(position).setImageBitmap(bitmap);
+			}
+			
+			@Override
+			public void onLoadingFailed(String iamgeUri, View view, FailReason failReason) {
+				
+			}
+			
+		});
+		
 	}
 	
 	private Bitmap getColorBitmap(int width, int height) {
@@ -171,6 +211,11 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 		} else {
 			return context.getResources().getColor(R.color.black_button);
 		}
+	}
+	
+	public static class ViewHolder {
+		TextView recipe_name;
+		ImageView thumbnail;
 	}
 	
 }

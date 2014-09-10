@@ -32,6 +32,8 @@ import com.penguininc.foodatory.templates.BasicFragment;
 
 public class RecipeProductManagerFragment extends BasicFragment {
 	
+	public final static String DEBUG_TAG = "RecipeProductManagerFragment";
+	
 	private long mRecipeId;
 	private ListView listview;
 	private RecipeProductListAdapter adapter;
@@ -71,10 +73,10 @@ public class RecipeProductManagerFragment extends BasicFragment {
 				DialogFragment frag = new QuantityPickerDialog();
             	frag.setTargetFragment(mThis, EDIT_PRODUCT);
             	Bundle bundle = new Bundle();
-            	bundle.putInt(QuantityPickerDialog.EDIT_KEY, QuantityPickerDialog.EDIT_VALUE);
-            	bundle.putLong(Product.PRODUCT_ID, r.getProduct().getId());
             	bundle.putInt(QuantityPickerDialog.STARTING_VALUE_KEY, r.getProductQty());
-            	bundle.putLong(RecipeProduct.RECIPE_PRODUCT_ID, r.getId());
+            	bundle.putInt(QuantityPickerDialog.SAVE_TARGET_KEY, EDIT_PRODUCT_QUANTITY);
+            	bundle.putBoolean(QuantityPickerDialog.DELETE_TOGGLE_KEY, true);
+            	bundle.putInt(QuantityPickerDialog.DELETE_TARGET_KEY, DELETE_PRODUCT);
             	frag.setArguments(bundle);
             	frag.show(getFragmentManager().beginTransaction(), "Edit Product");
             	
@@ -154,6 +156,7 @@ public class RecipeProductManagerFragment extends BasicFragment {
 	        case NEW_PRODUCT_WITH_QUANTITY:
 	        	if (resultCode == Activity.RESULT_OK) {
 	        		Log.d("ReipceProductManager","in new product with quantity " + requestCode);
+	        		Log.d(DEBUG_TAG, "quantity = " + data.getIntExtra(QuantityPickerDialog.CHOSEN_QUANTITY, -1));
 	        		Recipe r = new Recipe();
 	            	r.setId(mRecipeId);
 	            	Product p = new Product();
@@ -161,7 +164,7 @@ public class RecipeProductManagerFragment extends BasicFragment {
 	            	RecipeProduct recipeProduct = new RecipeProduct();
 	            	recipeProduct.setProduct(p);
 	            	recipeProduct.setRecipe(r);
-	            	recipeProduct.setProductQty(data.getIntExtra(Product.PRODUCT_QTY, -1));
+	            	recipeProduct.setProductQty(data.getIntExtra(QuantityPickerDialog.CHOSEN_QUANTITY, -1));
 	            	
 	            	//Save new recipe product
 	            	LoaderCallbacks<Long> saveCallbacks = 

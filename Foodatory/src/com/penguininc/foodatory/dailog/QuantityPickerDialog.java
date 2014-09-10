@@ -1,8 +1,8 @@
 package com.penguininc.foodatory.dailog;
 
+import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.DialogFragment;
-import android.app.ActionBar.LayoutParams;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -14,21 +14,60 @@ import android.view.Window;
 import android.widget.Button;
 
 import com.penguininc.foodatory.R;
-import com.penguininc.foodatory.RecipeProductManagerFragment;
-import com.penguininc.foodatory.sqlite.model.Product;
-import com.penguininc.foodatory.sqlite.model.RecipeProduct;
 import com.penguininc.foodatory.view.CounterView;
+
+/**
+ * Dialog box to pick a quantity. Quantity user selected
+ * is returned in the bundle under the CHOSEN_QUANTITY
+ * key
+ * 
+ * Set the behavior of box by setting the keys
+ * in the bundle when you launch the fragment
+ * 
+ * The following keys expect the following type:
+ * 
+ * STARTING_VALUE_KEY -> int
+ * MULTIPLIER_KEY -> int >= 1
+ * DELETE_TOGGLE_KEY -> boolean
+ * DELETE_TARGET_KEY -> int != 0
+ * SAVE_TARGET_KEY -> int != 0
+ * 
+ * @author Alec Anderson
+ *
+ */
 
 public class QuantityPickerDialog extends DialogFragment {
 	
-	CounterView productQty;
+	CounterView counterView;
 	int multiplier;
-	public final static int EDIT_VALUE = 1;
-	public final static String EDIT_KEY = "edit_key";
+	int deleteTargetKey;
+	int saveTargetKey;
+	boolean deleteToggle;
 	
+	
+	/* 
+	 * Various keys to send in bundle to set the behavior
+	 * of the QuantityPickerDialog
+	 */
 	public final static String STARTING_VALUE_KEY = "starting_value";
-	private final static int DEFAULT_STARTING_VALUE = 1;
+	public final static String MULTIPLIER_KEY = "multiplier";
+	public final static String DELETE_TOGGLE_KEY = "delete_key";
+	public final static String DELETE_TARGET_KEY = "delete_target_key";
+	public final static String SAVE_TARGET_KEY = "save_target_key";
 	
+	/*
+	 * Default settings for our various values
+	 */
+	public final static int DEFAULT_STARTING_VALUE = 1;
+	public final static int DEFAULT_MULTIPLIER = 1;
+	public final static boolean DEFAULT_DELETE_TOGGLE = false;
+	public final static int DEFAULT_DELETE_TARGET = Activity.RESULT_OK;
+	public final static int DEFAULT_SAVE_TARGET = Activity.RESULT_OK;
+	
+	
+	/*
+	 * Key that contains the value user selected
+	 */
 	public final static String CHOSEN_QUANTITY = "chosen_quantity";
 	
 	@Override
@@ -37,27 +76,39 @@ public class QuantityPickerDialog extends DialogFragment {
 		
 		//no title
 		getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        
 		View view = inflater.inflate(R.layout.dialog_quantity_picker, container);
 		
-		productQty = (CounterView)view.findViewById(R.id.product_qty);
+		counterView = (CounterView)view.findViewById(R.id.quantity);
+		
 		/*
-		if(getArguments().getInt(Product.PRODUCT_QTY) == 0) {
-			multiplier = getArguments().getInt(Product.PRODUCT_QTY, 1);
-		} else {
-			multiplier = 1;
+		 * Load our various settings
+		 */
+		// try loading the multiplier
+		int multiplier = getArguments().getInt(MULTIPLIER_KEY);
+		if(multiplier < 1) {
+			multiplier = DEFAULT_MULTIPLIER;
 		}
-		*/
 		
-		multiplier = 1;
-		
+		// try loading the starting value
 		int startingValue = getArguments().getInt(STARTING_VALUE_KEY);
-		
 		if(startingValue != 0) {
-			productQty.setValue(startingValue);
+			counterView.setValue(startingValue);
 		} else {
-			productQty.setValue(DEFAULT_STARTING_VALUE);
+			counterView.setValue(DEFAULT_STARTING_VALUE);
 		}
+		
+		// try loading the targets
+		deleteTargetKey = getArguments().getInt(DELETE_TARGET_KEY);
+		saveTargetKey = getArguments().getInt(SAVE_TARGET_KEY);
+		if(deleteTargetKey == 0) {
+			deleteTargetKey = DEFAULT_DELETE_TARGET;
+		}
+		if(saveTargetKey == 0) {
+			saveTargetKey = DEFAULT_SAVE_TARGET;
+		}
+		
+		// delete button toggle
+		deleteToggle = getArguments().getBoolean(DELETE_TOGGLE_KEY);
 		
 		Button save = (Button)view.findViewById(R.id.save);
 		
@@ -66,24 +117,15 @@ public class QuantityPickerDialog extends DialogFragment {
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent();
-				//send back the arguments we got
-				i.putExtras(getArguments());
-				
-				//change result code if we're editing an existing recipeproduct
-				if(getArguments().getInt(EDIT_KEY) == EDIT_VALUE) {
-					//put current recipe id in bundle
-					i.putExtra(RecipeProduct.RECIPE_PRODUCT_ID, getArguments().getLong(RecipeProduct.RECIPE_PRODUCT_ID));
-					getTargetFragment().onActivityResult(getTargetRequestCode(), RecipeProductManagerFragment.EDIT_PRODUCT_QUANTITY, i);
-				} else {
-					i.putExtra(CHOSEN_QUANTITY, productQty.getValue());
-					getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, i);
-				}
+				i.putExtra(CHOSEN_QUANTITY, counterView.getValue());
+				getTargetFragment().onActivityResult(getTargetRequestCode(), 
+						saveTargetKey, i);
 				dismiss();
 			}
 		});
 		
 		// only display delete button if we're editing existing delete button
-		if(getArguments().getInt(EDIT_KEY) == EDIT_VALUE) {
+		if(deleteToggle) {
 			Button delete = (Button)view.findViewById(R.id.delete);
 			delete.setVisibility(View.VISIBLE);
 			delete.setOnClickListener(new OnClickListener() {
@@ -91,11 +133,8 @@ public class QuantityPickerDialog extends DialogFragment {
 				@Override
 				public void onClick(View v) {
 					Intent i = new Intent();
-					//put current recipe id in bundle
-					i.putExtra(RecipeProduct.RECIPE_PRODUCT_ID, getArguments().getLong(RecipeProduct.RECIPE_PRODUCT_ID));
-					i.putExtra(Product.PRODUCT_ID, getArguments().getLong(Product.PRODUCT_ID));
-					i.putExtra(Product.PRODUCT_DELETE, true);
-					getTargetFragment().onActivityResult(getTargetRequestCode(), RecipeProductManagerFragment.DELETE_PRODUCT, i);
+					getTargetFragment().onActivityResult(getTargetRequestCode(),
+							deleteTargetKey, i);
 					dismiss();
 					
 				}

@@ -1,16 +1,16 @@
 package com.penguininc.foodatory.templates;
 
 
-import com.penguininc.foodatory.interfaces.BasicFragmentInterface;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public abstract class BasicFragment extends Fragment 
+import com.penguininc.foodatory.interfaces.BasicFragmentInterface;
+import com.penguininc.foodatory.view.OrmLiteFragment;
+
+public abstract class BasicFragment extends OrmLiteFragment 
 	implements BasicFragmentInterface {
 
 	protected BasicActivityInterface mBasicActivityListener;

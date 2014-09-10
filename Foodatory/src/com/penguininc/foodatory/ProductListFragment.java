@@ -1,10 +1,9 @@
 package com.penguininc.foodatory;
 
-import java.util.ArrayList;
+import java.sql.SQLException;
+import java.util.List;
 
-import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
-import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,17 +15,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.penguininc.foodatory.adapter.ProductListAdapter;
-import com.penguininc.foodatory.sqlite.helper.ProductHelper;
-import com.penguininc.foodatory.sqlite.loader.GenericLoaderCallbacks;
-import com.penguininc.foodatory.sqlite.model.Product;
+import com.penguininc.foodatory.orm.dao.ProductDao;
+import com.penguininc.foodatory.orm.object.Product;
 import com.penguininc.foodatory.templates.BasicFragment;
 
 public class ProductListFragment extends BasicFragment {
 
-	private final static int GET_PRODUCTS = 0;
+	private static final String DEBUG_TAG = "ProductListFragment";
+	
 	private ListView listview;
 	ProductListAdapter adapter;
-	LoaderCallbacks<ArrayList<Product>> callbacks;
+	//LoaderCallbacks<ArrayList<Product>> callbacks;
 	private int mProductType;
 	
 	@Override
@@ -53,27 +52,8 @@ public class ProductListFragment extends BasicFragment {
 		}
 		emptyView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.big_products, 0, 0);
 		listview.setEmptyView(emptyView);
-		callbacks = (new GenericLoaderCallbacks<Integer, ArrayList<Product>>(getActivity(), mProductType){
-
-			@Override
-			protected ArrayList<Product> doInBackground(Integer data) {
-				return (new ProductHelper(context)).getAllProductsWithType(data);
-			}
-
-			@Override
-			protected void loadFinished(ArrayList<Product> output) {
-				adapter = new ProductListAdapter(getActivity(), output);
-				listview.setAdapter(adapter);
-				
-			}
-			
-			@Override
-			protected void resetLoader(Loader<ArrayList<Product>> args) {
-				listview.setAdapter(null);
-			}
-			
-		});
-
+		
+		/* Make on click launch info */
 		listview.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -82,24 +62,28 @@ public class ProductListFragment extends BasicFragment {
 				Product p = adapter.getItem(position);
 				Intent i = new Intent(getActivity(), EditProductActivity.class);
 				Bundle b = new Bundle();
-				b.putLong(Product.PRODUCT_ID, p.getId());
+				b.putSerializable(Product.KEY, p);
 				i.putExtras(b);
 				startActivity(i);
 			}
 			
 		});
-		
 		return view;
 	}
 	
 	@Override
 	public void onResume() {
 		super.onResume();
-		if(getLoaderManager().getLoader(GET_PRODUCTS) != null) {
-			getLoaderManager().restartLoader(GET_PRODUCTS, null, callbacks);
-		} else {
-			getLoaderManager().initLoader(GET_PRODUCTS, null, callbacks);
+		try {
+			ProductDao productDao = getHelper().getProductDao();
+			List<Product> products = productDao.queryForType(mProductType);
+			adapter = new ProductListAdapter(getActivity(), products);
+			listview.setAdapter(adapter);
+			
+		} catch (SQLException e) {
+			
 		}
+		
 	}
 	
 }

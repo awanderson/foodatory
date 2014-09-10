@@ -8,11 +8,7 @@ package com.penguininc.foodatory.dailog;
  */
 
 import android.app.Activity;
-import android.app.DialogFragment;
-import android.app.LoaderManager;
-import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
-import android.content.Loader;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,19 +20,18 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.penguininc.foodatory.InventoryFragment;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.penguininc.foodatory.R;
 import com.penguininc.foodatory.interfaces.BasicFragmentInterface;
 import com.penguininc.foodatory.listener.ProductTypeSwitchListener;
-import com.penguininc.foodatory.sqlite.helper.ProductHelper;
-import com.penguininc.foodatory.sqlite.loader.GenericLoaderCallbacks;
-import com.penguininc.foodatory.sqlite.model.Product;
+import com.penguininc.foodatory.orm.object.Product;
 import com.penguininc.foodatory.templates.BasicActivity;
 import com.penguininc.foodatory.templates.BasicActivityInterface;
 import com.penguininc.foodatory.view.CounterView;
+import com.penguininc.foodatory.view.OrmLiteDialogFragment;
 import com.penguininc.foodatory.view.ProductTypeView;
 
-public class NewProductDialog extends DialogFragment
+public class NewProductDialog extends OrmLiteDialogFragment
 	implements BasicFragmentInterface{
 
 	private static final int NEW_PRODUCT = 0;
@@ -100,54 +95,29 @@ public class NewProductDialog extends DialogFragment
 				if(product_name.equals("")) {
 					Toast.makeText(getActivity(),"Need Product Name",Toast.LENGTH_SHORT).show();
 				} else {
+					// get product properties from view and save it
 					int product_qty = mProductQty.getValue();
-					Long product_freshness = (long)mProductFreshness.getValue();
+					int product_freshness = mProductFreshness.getValue();
 					int product_type = mProductType.getType();
-					Product p = new Product();
-					p.setFreshLength(product_freshness);
-					p.setProductName(product_name);
-					p.setQty(product_qty);
-					p.setType(product_type);
-					/* 
-					 * if we're embedded, save it now and then destroy
-					 * activity. Bad practice, so we'll need to fix this
-					 * later
-					 */
-					if(mEmbedded) {
-						LoaderManager lm = getLoaderManager();
-						lm.initLoader(NEW_PRODUCT, null, (LoaderCallbacks<Long>)
-								(new GenericLoaderCallbacks<Product, Long>(getActivity(), p) {
-
-							@Override
-							protected Long doInBackground(Product data) {
-								return (new ProductHelper(context)).createProduct((data));
-							}
-
-							@Override
-							protected void loadFinished(Long output) {
-								getActivity().finish();
-								Toast.makeText(getActivity(),"Product Added",Toast.LENGTH_SHORT).show();
-							}
-
-							@Override
-							protected void resetLoader(Loader<Long> args) {
-								
-							}
-							
-						}));
-					} else {
-						/*
-						 * if we're a dialog, we'll create a bundle,
-						 * put the product there, and then return to
-						 * our target fragment, where it's saved there
-						 */
-						Bundle bundle = new Bundle();
-						bundle.putSerializable(Product.PRODUCT, p);
-						Intent i = new Intent();
-						i.putExtras(bundle);
-						getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, i);
+					Product product = new Product();
+					product.setFreshLength(product_freshness);
+					product.setProductName(product_name);
+					product.setQty(product_qty);
+					product.setType(product_type);
+					RuntimeExceptionDao<Product, Integer> dao = 
+							getHelper().getProductRuntimeExceptionDao();
+					dao.create(product);
+					// send back our product
+					Intent i = new Intent();
+					i.putExtra(Product.KEY, product);
+					if(getTargetFragment() != null) {
+						getTargetFragment().onActivityResult(getTargetRequestCode(), 
+								Activity.RESULT_OK, i);
 						dismiss();
+					} else {
+						getActivity().finish();
 					}
+					
 				}
 			}
 		});

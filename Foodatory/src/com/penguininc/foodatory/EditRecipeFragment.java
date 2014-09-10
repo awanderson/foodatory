@@ -13,7 +13,6 @@ import android.content.Loader;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,15 +39,17 @@ public class EditRecipeFragment extends BasicFragment {
 	
 	EditText mRecipeName;
 	//EditText mRecipeDescription;
-	ImageView mImageView;
+	ImageView mImageView, mDefaultImage;
 	long mRecipeId;
 	RecipeDirectionFragment mDirectionFrag;
 	String mCurrentPhotoPath;
+	String mOldPhotoPath;
 	Recipe mCurrentRecipe;
 	Uri fileUri;
 	
 	static final int REQUEST_TAKE_PHOTO = 1;
 	
+	private final static String DEBUG_TAG = "EditRecipeFragment";
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -72,6 +73,18 @@ public class EditRecipeFragment extends BasicFragment {
 				Log.d("EditRecipeFragment", "view clicked");
 			}
 		});
+		
+		View mSpacer = (View)view.findViewById(R.id.spacer);
+		//make extra spacer launch picture intent too
+		mSpacer.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				dispatchTakePictureIntent();
+			}
+		});
+		
+		mDefaultImage = (ImageView)view.findViewById(R.id.recipe_capture_image);
 		
 		//load recipe data
 		LoaderCallbacks<Recipe> callbacks = (new GenericLoaderCallbacks<Long, Recipe>(getActivity(), mRecipeId) {
@@ -181,6 +194,11 @@ public class EditRecipeFragment extends BasicFragment {
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
+	    	
+	    	if(data == null) {
+	    		Log.d(DEBUG_TAG, "data null");
+	    	}
+	    	
 	    	setPic();
 	    	/*
 	        Bundle extras = data.getExtras();
@@ -203,6 +221,8 @@ public class EditRecipeFragment extends BasicFragment {
 	        storageDir      /* directory */
 	    );
 	    Log.d("EditRecipeFragment", "couldn't create temp file");
+	    //Save the old path incase we don't get a new valid picture file
+	    mOldPhotoPath = mCurrentPhotoPath;
 	    // Save a file: path for use with ACTION_VIEW intents
 	    mCurrentPhotoPath = image.getAbsolutePath();
 	    return image;
@@ -212,21 +232,17 @@ public class EditRecipeFragment extends BasicFragment {
 	private void dispatchTakePictureIntent() {
 	    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 	    // Ensure that there's a camera activity to handle the intent
-	    Log.d("EditRecipeFragment", "ahead of if");
 	    if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
 	        // Create the File where the photo should go
 	        File photoFile = null;
-	        Log.d("EditRecipeFragment", "in if");
 	        try {
 	            photoFile = createImageFile();
 	        } catch (IOException ex) {
-	        	Log.d("EditRecipeFragment", "exception is " + ex.toString());
 	        	Log.d("EditRecipeFragment", "Couldn't create photo");
 	            // Error occurred while creating the File
 	        }
 	        // Continue only if the File was successfully created
 	        if (photoFile != null) {
-	        	Log.d("EditRecipeFragment", "launching camera");
 	            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
 	                    Uri.fromFile(photoFile));
 	            takePictureIntent.putExtra(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -236,7 +252,7 @@ public class EditRecipeFragment extends BasicFragment {
 	}
 	
 	private void setPic() {
-		if(mCurrentPhotoPath != null) {
+		if(mCurrentPhotoPath != null && mCurrentPhotoPath != "") {
 			// Get the dimensions of the View
 		    int targetW = mImageView.getWidth();
 		    int targetH = mImageView.getHeight();
@@ -255,8 +271,16 @@ public class EditRecipeFragment extends BasicFragment {
 		    bmOptions.inJustDecodeBounds = false;
 		    bmOptions.inSampleSize = scaleFactor;
 		    bmOptions.inPurgeable = true;
-	
+		    
 		    Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+		    if(bitmap == null || bitmap.getByteCount() == 0) {
+		    	Log.d(DEBUG_TAG, "Bitmap no good");
+		    	mCurrentPhotoPath = mOldPhotoPath;
+		    	mOldPhotoPath = null;
+		    	setPic();
+		    } else {
+		    	mDefaultImage.setVisibility(View.GONE);
+		    }
 		    mImageView.setImageBitmap(bitmap);
 		}
 		    

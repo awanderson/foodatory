@@ -15,16 +15,16 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.penguininc.foodatory.R;
-import com.penguininc.foodatory.sqlite.model.Product;
+import com.penguininc.foodatory.orm.object.Product;
 
 public class SimpleProductListAdapter extends ArrayAdapter<Product>
 	implements Filterable{
 	
 	private Context context;
-	private ArrayList<Product> products;
-	private ArrayList<Product> original_products;
+	private List<Product> products;
+	private List<Product> original_products;
 	
-	public SimpleProductListAdapter(Context context, ArrayList<Product> products) {
+	public SimpleProductListAdapter(Context context, List<Product> products) {
 		super(context, R.layout.list_item_dialog_product, products);
 		this.context = context;
 		this.products = products;

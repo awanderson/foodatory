@@ -11,7 +11,7 @@
         style="@style/blue_dialog_title"/>
     
     <com.penguininc.foodatory.view.CounterView
-        android:id="@+id/product_qty"
+        android:id="@+id/quantity"
         android:layout_gravity="center"
         android:layout_width="100dp"
         android:layout_height="180dp"
