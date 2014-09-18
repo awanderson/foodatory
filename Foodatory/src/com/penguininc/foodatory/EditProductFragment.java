@@ -13,9 +13,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.penguininc.foodatory.framework.BasicFragment;
 import com.penguininc.foodatory.listener.ProductTypeSwitchListener;
 import com.penguininc.foodatory.orm.object.Product;
-import com.penguininc.foodatory.templates.BasicFragment;
 import com.penguininc.foodatory.view.CounterView;
 import com.penguininc.foodatory.view.ProductTypeView;
 

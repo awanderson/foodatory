@@ -1,15 +1,12 @@
 package com.penguininc.foodatory;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
-import android.app.LoaderManager;
-import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
-import android.content.Loader;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,29 +16,24 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.mobeta.android.dslv.DragSortListView;
 import com.penguininc.foodatory.adapter.DirectionListAdapter;
 import com.penguininc.foodatory.dailog.NewDirectionDialog;
-import com.penguininc.foodatory.sqlite.helper.DirectionHelper;
-import com.penguininc.foodatory.sqlite.loader.GenericLoaderCallbacks;
-import com.penguininc.foodatory.sqlite.model.Direction;
-import com.penguininc.foodatory.sqlite.model.Recipe;
-import com.penguininc.foodatory.templates.BasicFragment;
+import com.penguininc.foodatory.framework.BasicFragment;
+import com.penguininc.foodatory.orm.object.Direction;
+import com.penguininc.foodatory.orm.object.Recipe;
 import com.penguininc.foodatory.utilities.ListviewUtilities;
 
 public class RecipeDirectionFragment extends BasicFragment {
 
-	private long mRecipeId;
+	private Recipe recipe;
 	private DragSortListView listview;
 	private TextView emptyView;
-	private LoaderCallbacks<ArrayList<Direction>> callbacks;
 	private DirectionListAdapter adapter;
-	private Fragment mThis;
+	private RuntimeExceptionDao<Direction, Integer> directionDao;
 	
-	private static final int GET_DIRECTIONS = 1;
 	private static final int NEW_DIRECTION = 2;
-	private static final int NEW_LOADER_VALUE = 3;
-	private static final int DELETE_LOADER_VALUE = 4;
 	
 	private int update_loader_value = 100;
 	
@@ -49,7 +41,7 @@ public class RecipeDirectionFragment extends BasicFragment {
 	    new DragSortListView.DropListener() {
 	        @Override
 	        public void drop(int from, int to) {
-	        	ArrayList<Direction> directions = adapter.directions;
+	        	List<Direction> directions = adapter.getDirections();
 	            Direction item = directions.get(from);
 	            directions.remove(item);
 	            directions.add(to, item);
@@ -72,34 +64,19 @@ public class RecipeDirectionFragment extends BasicFragment {
 	    new DragSortListView.RemoveListener() {
 	        @Override
 	        public void remove(int which) {
-	        	Direction d = adapter.getItem(which);
-	            adapter.remove(d);
-	            LoaderCallbacks<Void> removeCallbacks =
-						(new GenericLoaderCallbacks<Direction, Void> (getActivity(), d){
-
-							@Override
-							protected Void doInBackground(Direction data) {
-								(new DirectionHelper(context)).deleteDirection(data.getId());
-								return null;
-							}
-
-							@Override
-							protected void loadFinished(Void output) {
-								ListviewUtilities.setListViewHeightBasedOnChildren(listview);
-							}
-
-							@Override
-							protected void resetLoader(Loader<Void> args) {
-							}
-						});
-	            LoaderManager l = getLoaderManager();
-	            l.initLoader(update_loader_value, null, removeCallbacks);
+	        	Direction direction = adapter.getItem(which);
+	            adapter.remove(direction);
+	            if(directionDao == null) {
+	            	directionDao = getHelper().getDirectionRuntimeExceptionDao();
+	            }
+	            directionDao.delete(direction);
+	            ListviewUtilities.setListViewHeightBasedOnChildren(listview);
 	            update_loader_value++;
 	            
-	            //Update the count for every element after
-	            ArrayList<Direction> directions = adapter.directions;
+	            // Update the count for every element after
+	            List<Direction> directions = adapter.getDirections();
 	            for(int i = which; i < directions.size(); i++) {
-            		Direction direction = directions.get(i);
+            		direction = directions.get(i);
             		direction.setOrder(i + 1);
             	}
 	            adapter.notifyDataSetChanged();
@@ -114,18 +91,17 @@ public class RecipeDirectionFragment extends BasicFragment {
 		
 		View view = super.onCreateView(inflater, container, savedInstanceState);
 		
-		Bundle b = getArguments();
-		mRecipeId = b.getLong(Recipe.RECIPE_ID);
+		Bundle bundle = getArguments();
+		recipe = (Recipe)bundle.getSerializable(Recipe.KEY);
 		
 		Button newDirection = (Button)view.findViewById(R.id.new_direction);
-		
-		mThis = this;
+		final Fragment targetFragment = this;
 		newDirection.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				DialogFragment frag = new NewDirectionDialog();
-				frag.setTargetFragment(mThis, NEW_DIRECTION);
+				frag.setTargetFragment(targetFragment, NEW_DIRECTION);
 				frag.setArguments(getArguments());
 				frag.show(getFragmentManager().beginTransaction(), "New Direction");
 			}
@@ -145,43 +121,18 @@ public class RecipeDirectionFragment extends BasicFragment {
 		});
 		*/
 		emptyView = (TextView)view.findViewById(R.id.empty_list);
+		// refresh our recipe to get the latest directions
+		RuntimeExceptionDao<Recipe, Integer> recipeDao = 
+				getHelper().getRecipeRuntimeExceptionDao();
+		recipeDao.refresh(recipe);
 		
-		callbacks = (new GenericLoaderCallbacks<Long,
-				ArrayList<Direction>>(getActivity(), mRecipeId) {
-
-					@Override
-					protected ArrayList<Direction> doInBackground(Long data) {
-						return (new DirectionHelper(getActivity())).getDirections(data);
-					}
-
-					@Override
-					protected void loadFinished(ArrayList<Direction> output) {
-						Log.d("RecipeDirection", "restarting callbacks");
-						if(adapter == null) {
-							adapter = new DirectionListAdapter(getActivity(), output);
-							listview.setEmptyView(emptyView);
-							listview.setAdapter(adapter);
-							ListviewUtilities.setListViewHeightBasedOnChildren(listview);
-						}
-						
-					}
-
-					@Override
-					protected void resetLoader(Loader<ArrayList<Direction>> args) {
-						listview.setAdapter(null);
-					}
-		
-			
-		});
-		
-		if(adapter == null) {
-			Log.d("RecipeDirection", "adapter");
-			getLoaderManager().initLoader(GET_DIRECTIONS, null, callbacks);
-		} else {
+		List<Direction> directions = recipe.getDirections();
+		if(directions != null) {
+			adapter = new DirectionListAdapter(getActivity(), directions);
 			listview.setAdapter(adapter);
 			ListviewUtilities.setListViewHeightBasedOnChildren(listview);
 		}
-		
+		listview.setEmptyView(emptyView);
 		return view;
 		
 	}
@@ -197,87 +148,55 @@ public class RecipeDirectionFragment extends BasicFragment {
 		
 		case NEW_DIRECTION:
 			if(resultCode == Activity.RESULT_OK) {
-				Direction d = new Direction();
-				d.setRecipeId(mRecipeId);
-				d.setContent(data.getStringExtra(NewDirectionDialog.DIRECTION_CONTENT));
-				d.setOrder(adapter.getCount() + 1);
-				final Direction direction = d;
-				
-				Log.d("RecipeDirection", "inOn activity result");
-				//save new direction
-				LoaderCallbacks<Long> saveCallbacks = 
-						(new GenericLoaderCallbacks<Direction, Long> (getActivity(), d){
-
-							@Override
-							protected Long doInBackground(Direction data) {
-								return (new DirectionHelper(context)).createDirection(data);
-							}
-
-							@Override
-							protected void loadFinished(Long output) {
-								Log.d("RecipeDirection", "Adding direction");
-								adapter.directions.add(direction);
-								adapter.notifyDataSetChanged();
-								getLoaderManager().destroyLoader(NEW_LOADER_VALUE);
-								ListviewUtilities.setListViewHeightBasedOnChildren(listview);
-							}
-
-							@Override
-							protected void resetLoader(Loader<Long> args) {
-								
-							}
-						
-						
-						});
-				
-				LoaderManager l = getLoaderManager();
-				if(l.getLoader(NEW_LOADER_VALUE) != null) {
-					l.restartLoader(NEW_LOADER_VALUE, null, saveCallbacks);
-				} else {
-					l.initLoader(NEW_LOADER_VALUE, null, saveCallbacks);
+				Direction direction = new Direction();
+				direction.setRecipe(recipe);
+				direction.setContent(data.getStringExtra(NewDirectionDialog.DIRECTION_CONTENT));
+				if(directionDao == null) {
+					directionDao = getHelper().getDirectionRuntimeExceptionDao();
 				}
+				// if we have no adapter, means we've had no prior directions
+				if(adapter == null) {
+					direction.setOrder(1);
+					List<Direction> directions = new ArrayList<Direction>();
+					directions.add(direction);
+					adapter = new DirectionListAdapter(getActivity(), directions);
+					listview.setAdapter(adapter);
+				} else {
+					direction.setOrder(adapter.getCount() + 1);
+					adapter.add(direction);
+					adapter.notifyDataSetChanged();
+				}
+				directionDao.create(direction);
+				ListviewUtilities.setListViewHeightBasedOnChildren(listview);
 			}
 		}
 	}
 	
 	@Override
-	public void onStop() {
-		super.onStop();
-		Log.d("RecipeDirection", "in on stop");
-		LoaderManager l = getLoaderManager();
-		//save reordering now
-		for(int i = 0; i < adapter.directions.size() ; i++) {
-			
-			//remove the items that remian from the original list
-			//to determine what needs to get deleted
-			adapter.originalDirections.remove(adapter.directions.get(i));
-			
-			//check if item is in same position as it originally was
-			if(adapter.originalDirections.size() < (i+1) || !adapter.directions.get(i).equals(adapter.originalDirections.get(i))){
-				// item changed, update db
-				Direction d = adapter.directions.get(i);
-				LoaderCallbacks<Integer> updateCallbacks = 
-						(new GenericLoaderCallbacks<Direction, Integer> (getActivity(), d) {
-
-							@Override
-							protected Integer doInBackground(Direction data) {
-								return (new DirectionHelper(context)).updateDirection(data);
-							}
-
-							@Override
-							protected void loadFinished(Integer output) {
-								
-							}
-
-							@Override
-							protected void resetLoader(Loader<Integer> args) {
-								
-							}
-						});
-				//we need a unique id for each loader, or we'll override
-				//the previous call
-				l.initLoader(update_loader_value, null, updateCallbacks);
-				update_loader_value++;
+	public void onPause() {
+		super.onPause();
+		if(adapter != null) {
+			//save reordering now
+			List<Direction> originalDirections = adapter.getOriginalDirections();
+			List<Direction> directions = adapter.getDirections();
+			for(int i = 0; i < directions.size() ; i++) {
+				
+				//remove the items that remain from the original list
+				//to determine what needs to get deleted
+				originalDirections.remove(
+						directions.get(i));
+				
+				//check if item is in same position as it originally was
+				if(originalDirections.size() < (i+1) || !directions.get(i).equals(
+						originalDirections.get(i))){
+					// item changed, update db
+					Direction direction = directions.get(i);
+					if(directionDao == null) {
+						directionDao = getHelper().getDirectionRuntimeExceptionDao();
+					}
+					directionDao.update(direction);
+					update_loader_value++;
+				}
 			}
 		}
 		

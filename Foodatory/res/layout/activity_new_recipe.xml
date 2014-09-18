@@ -13,7 +13,8 @@
         custom:selected_background="@drawable/tab_selected"
         custom:unselected_background="@drawable/tab_unselected"
         custom:tab_holder="@+id/content_holder"
-        custom:tab_number="2"/>
+        custom:tab_number="2"
+        android:background="@drawable/dark_shadow_bottom"/>
     
     <FrameLayout
         android:id="@id/content_holder"

@@ -40,8 +40,9 @@ public class Direction implements Serializable{
 	@DatabaseField
 	int order;
 	
-	@DatabaseField
-	int recipe_id;
+	@DatabaseField(canBeNull = false, foreign = true,
+			foreignAutoRefresh = true)
+	Recipe recipe;
 	
 	public Direction() {
 		// needed by ormlite
@@ -90,17 +91,17 @@ public class Direction implements Serializable{
 	}
 
 	/**
-	 * @return the recipe_id
+	 * @return the recipe
 	 */
-	public int getRecipeId() {
-		return recipe_id;
+	public Recipe getRecipe() {
+		return recipe;
 	}
 
 	/**
-	 * @param recipe_id the recipe_id to set
+	 * @param recipe the recipe to set
 	 */
-	public void setRecipeId(int recipeId) {
-		this.recipe_id = recipeId;
+	public void setRecipe(Recipe recipe) {
+		this.recipe = recipe;
 	}
 	
 }

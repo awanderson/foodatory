@@ -4,7 +4,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.DialogFragment;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -25,9 +24,8 @@ import android.widget.TextView;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.penguininc.foodatory.R;
 import com.penguininc.foodatory.adapter.SimpleProductListAdapter;
+import com.penguininc.foodatory.framework.BasicActivity;
 import com.penguininc.foodatory.orm.object.Product;
-import com.penguininc.foodatory.sqlite.model.Recipe;
-import com.penguininc.foodatory.templates.BasicActivity;
 import com.penguininc.foodatory.view.OrmLiteDialogFragment;
 
 public class ProductPickerDialog extends OrmLiteDialogFragment {
@@ -39,8 +37,6 @@ public class ProductPickerDialog extends OrmLiteDialogFragment {
 	EditText mFilter;
 	TextWatcher mTextWatcher;
 	int mNewProductRequestCode;
-	
-	private final static int NEW_PRODUCT = 1;
 	
 	//used to set the request code if new product is set
 	public final static String NEW_PRODUCT_REQUEST_CODE_KEY = "new_product_key";
@@ -54,13 +50,6 @@ public class ProductPickerDialog extends OrmLiteDialogFragment {
 			Bundle savedInstanceState) {
 		//no title
 		getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-		
-		mRecipeId = -1;
-		
-		if(getArguments() != null) {
-			mRecipeId = getArguments().getLong(Recipe.RECIPE_ID);
-			Log.d("ProductPickerDialog", "Setting recipe id = " + mRecipeId);
-		}
 		
 		mNewProductRequestCode = getArguments().getInt(NEW_PRODUCT_REQUEST_CODE_KEY, 0);
 		

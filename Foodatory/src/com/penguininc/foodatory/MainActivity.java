@@ -180,7 +180,7 @@ public class MainActivity extends Activity
             fragment = new ShoppingListFragment();
             break;
         case 2:
-            fragment = new RecipesFragment();
+            fragment = new RecipeFragment();
             break;
         case 3:
             fragment = new ProductsFragment();

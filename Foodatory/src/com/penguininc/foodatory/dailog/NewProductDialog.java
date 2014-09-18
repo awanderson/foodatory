@@ -22,11 +22,11 @@ import android.widget.Toast;
 
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.penguininc.foodatory.R;
+import com.penguininc.foodatory.framework.BasicActivity;
+import com.penguininc.foodatory.framework.BasicActivityInterface;
 import com.penguininc.foodatory.interfaces.BasicFragmentInterface;
 import com.penguininc.foodatory.listener.ProductTypeSwitchListener;
 import com.penguininc.foodatory.orm.object.Product;
-import com.penguininc.foodatory.templates.BasicActivity;
-import com.penguininc.foodatory.templates.BasicActivityInterface;
 import com.penguininc.foodatory.view.CounterView;
 import com.penguininc.foodatory.view.OrmLiteDialogFragment;
 import com.penguininc.foodatory.view.ProductTypeView;

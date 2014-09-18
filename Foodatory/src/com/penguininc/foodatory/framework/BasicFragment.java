@@ -1,4 +1,5 @@
-package com.penguininc.foodatory.templates;
+package com.penguininc.foodatory.framework;
+
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -6,19 +7,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.penguininc.foodatory.MainActivity;
-import com.penguininc.foodatory.interfaces.MainActivityInterface;
+import com.penguininc.foodatory.interfaces.BasicFragmentInterface;
 import com.penguininc.foodatory.view.OrmLiteFragment;
 
-public abstract class HomeScreenFragment extends OrmLiteFragment {
-	
-	protected MainActivityInterface mMainActivityListener;
+public abstract class BasicFragment extends OrmLiteFragment 
+	implements BasicFragmentInterface {
+
+	protected BasicActivityInterface mBasicActivityListener;
 	
 	protected abstract int getLayout();
 	
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState)
-	{
+			Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
 		View v = inflater.inflate(getLayout(), container, false);
 		setHasOptionsMenu(true);
@@ -30,11 +32,16 @@ public abstract class HomeScreenFragment extends OrmLiteFragment {
 	{
 		super.onAttach(activity);
 		try{
-			mMainActivityListener = (MainActivity)activity;
+			mBasicActivityListener = (BasicActivity)activity;
 		}
 		catch (ClassCastException e){
-			throw new ClassCastException(activity.toString()
-	                + " must implement MainActivityInterface");
+			mBasicActivityListener = null;
+		}
+	}
+	
+	public void changeTitle(String title) {
+		if(mBasicActivityListener != null) {
+			mBasicActivityListener.changeTitle(title);
 		}
 	}
 	

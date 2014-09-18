@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import com.penguininc.foodatory.orm.dao.impl.RecipeProductDaoImpl;
 
 
 
@@ -43,7 +44,7 @@ public class RecipeProduct implements Serializable{
 	
 	@DatabaseField(canBeNull = false, foreign = true,
 			foreignAutoRefresh = true)
-	Recipe Recipe;
+	Recipe recipe;
 	
 	public RecipeProduct() {
 		// need by ormlite
@@ -95,14 +96,14 @@ public class RecipeProduct implements Serializable{
 	 * @return the recipe
 	 */
 	public Recipe getRecipe() {
-		return Recipe;
+		return recipe;
 	}
 
 	/**
 	 * @param recipe the recipe to set
 	 */
 	public void setRecipe(Recipe recipe) {
-		Recipe = recipe;
+		this.recipe = recipe;
 	}
 	
 	

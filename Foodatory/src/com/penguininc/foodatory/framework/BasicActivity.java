@@ -1,17 +1,19 @@
-package com.penguininc.foodatory.templates;
+package com.penguininc.foodatory.framework;
 
 
-import android.os.Bundle;
-import android.view.ViewGroup;
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.os.Bundle;
+import android.view.ViewGroup;
 
+import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.penguininc.foodatory.R;
+import com.penguininc.foodatory.orm.DatabaseHelper;
 
-public abstract class BasicActivity extends Activity
-	implements BasicActivityInterface {
+public abstract class BasicActivity 
+		extends OrmLiteBaseActivity<DatabaseHelper>
+		implements BasicActivityInterface {
 	
 	private Fragment mFrag;
 	public final static String EMBEDDED = "embedded";

@@ -12,8 +12,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.penguininc.foodatory.framework.HomeScreenFragment;
 import com.penguininc.foodatory.orm.object.Product;
-import com.penguininc.foodatory.templates.HomeScreenFragment;
 import com.penguininc.foodatory.view.Tab;
 import com.penguininc.foodatory.view.TabView;
 

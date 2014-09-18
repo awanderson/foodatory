@@ -1,13 +1,13 @@
 package com.penguininc.foodatory.adapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -31,7 +31,7 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 import com.penguininc.foodatory.R;
-import com.penguininc.foodatory.sqlite.model.Recipe;
+import com.penguininc.foodatory.orm.object.Recipe;
 import com.penguininc.foodatory.utilities.ImageRounder;
 
 public class RecipeListAdapter extends ArrayAdapter<Recipe> {
@@ -40,12 +40,12 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 	
 	private Context context;
 	private ImageLoader imageLoader;
-	private ArrayList<Recipe> recipes;
+	private List<Recipe> recipes;
 	private ArrayList<ImageView> thumbnails;
 	private ArrayList<String> imageNames;
 	private ArrayList<Bitmap> imageBitmaps;
 	
-	public RecipeListAdapter(Context context, ArrayList<Recipe> recipes) {
+	public RecipeListAdapter(Context context, List<Recipe> recipes) {
 		super(context, R.layout.list_item_recipe, recipes);
 		this.context = context;
 		this.recipes = recipes;
@@ -66,7 +66,7 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 	
 	@SuppressLint("NewApi")
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(final int position, View convertView, ViewGroup parent) {
 		ViewHolder mHolder = null;
 		if (convertView == null) {
 			mHolder = new ViewHolder();
@@ -91,6 +91,7 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 
 			    @Override
 			    public void onGlobalLayout() {
+			    	Log.d(DEBUG_TAG, "color in global layout = " + recipes.get(position).getColor());
 			    	setPic(p);
 			        ViewTreeObserver obs = thumbnails.get(p).getViewTreeObserver();
 
@@ -103,7 +104,6 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 
 			});
 		} else {
-			Log.d(DEBUG_TAG, "Setting pic");
 			setPic(p);
 		}
 		
@@ -117,6 +117,7 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 		final int targetW = imageView.getWidth();
 	    final int targetH = imageView.getHeight();
 	    ImageSize targetSize = new ImageSize(targetW, targetH);
+	    Recipe recipe = recipes.get(position);
 	    
 	    BitmapProcessor postProcessor = new BitmapProcessor() {
 			
@@ -150,35 +151,36 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 		DisplayImageOptions options = new DisplayImageOptions.Builder()
 	    		.postProcessor(postProcessor)
 	    		.showImageForEmptyUri(new BitmapDrawable(context.getResources(),
-	    				getColorBitmap(targetW, targetH)))
+	    				getColorBitmap(targetW, targetH, recipe.getColor())))
 	    		.cacheInMemory(true)
 	    		.showImageOnFail(new BitmapDrawable(context.getResources(),
-	    				getColorBitmap(targetW, targetH)))
+	    				getColorBitmap(targetW, targetH, recipe.getColor())))
 	    		.build();
 	    
-		Log.d(DEBUG_TAG, "imagename = " + imageNames.get(position));
-		
-	    //bitmap = getColorBitmap(targetW, targetH);
-		imageLoader.loadImage("file://"+imageNames.get(position), 
-				targetSize,
-				options,
-				new SimpleImageLoadingListener() {
-			
-			@Override
-		    public void onLoadingComplete(String imageUri, View view, Bitmap bitmap) {
-				thumbnails.get(position).setImageBitmap(bitmap);
-			}
-			
-			@Override
-			public void onLoadingFailed(String iamgeUri, View view, FailReason failReason) {
+		if(imageNames.get(position) == null) {
+			imageView.setImageBitmap(getColorBitmap(targetW, targetH, recipe.getColor()));
+		} else {
+			//bitmap = getColorBitmap(targetW, targetH);
+			imageLoader.loadImage("file://"+imageNames.get(position), 
+					targetSize,
+					options,
+					new SimpleImageLoadingListener() {
 				
-			}
-			
-		});
+				@Override
+			    public void onLoadingComplete(String imageUri, View view, Bitmap bitmap) {
+					thumbnails.get(position).setImageBitmap(bitmap);
+				}
+				
+				@Override
+				public void onLoadingFailed(String iamgeUri, View view, FailReason failReason) {
+				}
+				
+			});
+		}
 		
 	}
 	
-	private Bitmap getColorBitmap(int width, int height) {
+	private Bitmap getColorBitmap(int width, int height, int color) {
 		// CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
 		Rect rect = new Rect(0, 0, width, height);
 		//UIGraphicsBeginImageContext(rect.size);
@@ -187,26 +189,24 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 		Canvas canvas = new Canvas(image);
 
 		//UIColor* color = [UIColor colorWithRed:255/255.0 green:245/255.0 blue:238/255.0 alpha:1.0];
-		int color = getRandomColor();
+		int colorResource = getColorResource(color);
 
 		//CGContextSetFillColorWithColor(context, [color CGColor]);
 		Paint paint = new Paint();
-		paint.setColor(color);
+		paint.setColor(colorResource);
 
 		//CGContextFillRect(context, rect);
 		canvas.drawRect(rect, paint);
-		
-		return image;
+		Bitmap dstBmp = ImageRounder.getRoundedCornerBitmap(image, width);
+		return dstBmp;
 	}
 	
-	private int getRandomColor() {
-		int rand = (int)(Math.random() * 4);
-		Log.d(DEBUG_TAG, "random = " + rand);
-		if(rand == 0) {
+	private int getColorResource(int color) {
+		if(color == Recipe.BLUE) {
 			return context.getResources().getColor(R.color.blue_button);
-		} else if (rand == 1) {
+		} else if (color == Recipe.GREEN) {
 			return context.getResources().getColor(R.color.green_button);
-		} else if (rand == 2) {
+		} else if (color == Recipe.RED) {
 			return context.getResources().getColor(R.color.red_button);
 		} else {
 			return context.getResources().getColor(R.color.black_button);
@@ -216,6 +216,7 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 	public static class ViewHolder {
 		TextView recipe_name;
 		ImageView thumbnail;
+		int color;
 	}
 	
 }

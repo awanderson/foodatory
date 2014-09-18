@@ -1,6 +1,6 @@
 package com.penguininc.foodatory.adapter;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.DialogFragment;
@@ -17,18 +17,17 @@ import android.widget.TextView;
 import com.penguininc.foodatory.R;
 import com.penguininc.foodatory.ShoppingListFragment;
 import com.penguininc.foodatory.dailog.ConfirmationDialog;
-import com.penguininc.foodatory.sqlite.model.Inventory;
-import com.penguininc.foodatory.sqlite.model.ShoppingListItem;
+import com.penguininc.foodatory.orm.object.ShoppingListItem;
 
 public class ShoppingListAdapter extends ArrayAdapter<ShoppingListItem> {
 	
 	private Context context;
-	private ArrayList<ShoppingListItem> shoppingList;
+	private List<ShoppingListItem> shoppingList;
 	private ShoppingListFragment fragment;
 	
 	public final static String SHOPPING_LIST_ITEM_POSITION = "shopping_list_item_position";
 	
-	public ShoppingListAdapter(Context context, ArrayList<ShoppingListItem> shoppingList,
+	public ShoppingListAdapter(Context context, List<ShoppingListItem> shoppingList,
 			ShoppingListFragment fragment) {
 		super(context, R.layout.list_item_shopping_item, shoppingList);
 		this.context = context;
@@ -85,8 +84,7 @@ public class ShoppingListAdapter extends ArrayAdapter<ShoppingListItem> {
 			public void onClick(View v) {
 				ShoppingListItem item = shoppingList.get(p);
 				Bundle bundle = new Bundle();
-				bundle.putLong(ShoppingListItem.SHOPPING_LIST_ITEM_ID, item.getId());
-				bundle.putInt(SHOPPING_LIST_ITEM_POSITION, p);
+				bundle.putSerializable(ShoppingListItem.KEY, item);
 				DialogFragment frag = new ConfirmationDialog();
 				frag.setArguments(bundle);
 				frag.setTargetFragment(fragment, ShoppingListFragment.DELETE_SHOPPING_LIST_ITEM);
@@ -118,7 +116,7 @@ public class ShoppingListAdapter extends ArrayAdapter<ShoppingListItem> {
 		s.setChecked(false);
 	}
 	
-	public ArrayList<ShoppingListItem> getShoppingList() {
+	public List<ShoppingListItem> getShoppingList() {
 		return shoppingList;
 	}
 }

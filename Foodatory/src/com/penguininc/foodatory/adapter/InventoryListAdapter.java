@@ -3,7 +3,6 @@ package com.penguininc.foodatory.adapter;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,11 +10,8 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.DialogFragment;
-import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
-import android.content.Loader;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,10 +25,7 @@ import com.penguininc.foodatory.R;
 import com.penguininc.foodatory.dailog.ConfirmationDialog;
 import com.penguininc.foodatory.orm.dao.PantryDao;
 import com.penguininc.foodatory.orm.object.Pantry;
-import com.penguininc.foodatory.sqlite.helper.InventoryHelper;
-import com.penguininc.foodatory.sqlite.loader.GenericLoaderCallbacks;
-import com.penguininc.foodatory.sqlite.model.Inventory;
-import com.penguininc.foodatory.sqlite.model.Product;
+import com.penguininc.foodatory.orm.object.Product;
 
 public class InventoryListAdapter extends ArrayAdapter<Pantry> {
 	

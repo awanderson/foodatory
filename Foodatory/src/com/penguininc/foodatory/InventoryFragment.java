@@ -19,9 +19,9 @@ import android.view.ViewGroup;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.penguininc.foodatory.dailog.ProductPickerDialog;
 import com.penguininc.foodatory.dailog.QuantityPickerDialog;
+import com.penguininc.foodatory.framework.HomeScreenFragment;
 import com.penguininc.foodatory.orm.object.Pantry;
 import com.penguininc.foodatory.orm.object.Product;
-import com.penguininc.foodatory.templates.HomeScreenFragment;
 import com.penguininc.foodatory.view.Tab;
 import com.penguininc.foodatory.view.TabView;
 
@@ -120,14 +120,15 @@ public class InventoryFragment extends HomeScreenFragment {
 				bundle.putBoolean(QuantityPickerDialog.DELETE_TOGGLE_KEY, false);
 				bundle.putInt(QuantityPickerDialog.STARTING_VALUE_KEY, 1);
 				frag.setArguments(bundle);
-				frag.show(getFragmentManager().beginTransaction(), "New Inventory with Quantity");
+				frag.show(getFragmentManager().beginTransaction(),
+						"New Inventory with Quantity");
 				
 			}
 			break;
 		
 		case NEW_PRODUCT:
 			if(resultCode == Activity.RESULT_OK) {
-				//pass serialized product on, and launch quantity
+				//save serialized product on, and launch quantity
 				Bundle bundle = data.getExtras();
 				newProduct = (Product) bundle.getSerializable(Product.KEY);
 				DialogFragment frag = new QuantityPickerDialog();
@@ -137,7 +138,6 @@ public class InventoryFragment extends HomeScreenFragment {
 				frag.setArguments(bundle);
 				frag.setTargetFragment(this, NEW_INVENTORY_WITH_QUANTITY);
 				frag.show(getFragmentManager().beginTransaction(), "New Inventory with Quantity");
-				Log.d("InventoryFragment", "product name = " + newProduct.getProductName());
 			}
 			break;
 			

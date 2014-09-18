@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,13 +16,13 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.penguininc.foodatory.R;
-import com.penguininc.foodatory.sqlite.model.Direction;
+import com.penguininc.foodatory.orm.object.Direction;
 
 public class DirectionListAdapter extends ArrayAdapter<Direction> {
 	
 	private Context context;
-	public ArrayList<Direction> directions;
-	public ArrayList<Direction> originalDirections;
+	private List<Direction> directions;
+	private List<Direction> originalDirections;
 	
 	public class DirectonComparator implements Comparator<Direction>{
 		
@@ -31,7 +32,7 @@ public class DirectionListAdapter extends ArrayAdapter<Direction> {
 	    }
 	}
 	
-	public DirectionListAdapter(Context context, ArrayList<Direction> directions) {
+	public DirectionListAdapter(Context context, List<Direction> directions) {
 		super(context, R.layout.list_item_direction, directions);
 		this.context = context;
 		
@@ -75,5 +76,11 @@ public class DirectionListAdapter extends ArrayAdapter<Direction> {
 		
 	}
 	
+	public List<Direction> getDirections() {
+		return directions;
+	}
 	
+	public List<Direction> getOriginalDirections() {
+		return originalDirections;
+	}
 }

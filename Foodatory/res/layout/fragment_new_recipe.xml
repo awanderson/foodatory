@@ -1,5 +1,3 @@
-
-
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -7,29 +5,29 @@
 	android:orientation="vertical"
 	android:background="@color/default_background">
 	
-    <RelativeLayout 
+    <RelativeLayout
 	    android:layout_width="match_parent"
 		android:layout_height="200dp">
-		    
+		
 		<ImageView
 			android:scaleType="centerCrop" 
 		    android:id="@+id/recipe_image"
 		    android:layout_width="match_parent"
 		    android:layout_height="180dp"
-		    android:background="@drawable/recipe_image_background"
 		    android:contentDescription="Recipe Image" />
 		    
 	    <ImageView 
 		    android:id="@+id/recipe_capture_image"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
+		    android:paddingTop="30dp"
 		    android:layout_centerInParent="true"
-		    android:src="@drawable/camera"/>
+		    android:src="@drawable/white_camera"/>
 		    
 		<EditText 
 			android:id="@+id/recipe_name"
 		    android:hint="Recipe Name"
-		    style="@style/default_edit_text"/>
+		    style="@style/dark_shadow_edit_text"/>
 		    
 	 </RelativeLayout>
 	    
@@ -37,7 +35,7 @@
         android:layout_height="fill_parent"
         android:layout_width="match_parent"
         android:overScrollMode="never"
-        android:layout_marginTop="-130dp">
+        android:layout_marginTop="-135dp">
 
         <LinearLayout 
             android:layout_width="match_parent"
@@ -50,7 +48,7 @@
                 android:layout_height="110dp"></View>
             
             <FrameLayout
-	            android:background="@color/default_background"
+                android:background="@drawable/dark_shadow_top"
 				android:id="@+id/recipe_product_manager"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content">

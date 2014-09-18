@@ -3,7 +3,7 @@ package com.penguininc.foodatory;
 import android.app.Fragment;
 import android.content.Intent;
 
-import com.penguininc.foodatory.templates.BasicActivity;
+import com.penguininc.foodatory.framework.BasicActivity;
 
 public class EditProductActivity extends BasicActivity {
 	

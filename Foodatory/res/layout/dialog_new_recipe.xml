@@ -13,11 +13,6 @@
         android:hint="Recipe Name"
         style="@style/default_edit_text"/>
     
-    <EditText 
-        android:id="@+id/recipe_description"
-        android:hint="Recipe Description"
-        style="@style/multiline_edit_text"/>
-    
     <Button
     	android:id="@+id/save" 
        	android:text="Save"

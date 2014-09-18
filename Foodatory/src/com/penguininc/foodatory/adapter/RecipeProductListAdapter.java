@@ -1,6 +1,6 @@
 package com.penguininc.foodatory.adapter;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,14 +11,14 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.penguininc.foodatory.R;
-import com.penguininc.foodatory.sqlite.model.RecipeProduct;
+import com.penguininc.foodatory.orm.object.RecipeProduct;
 
 public class RecipeProductListAdapter extends ArrayAdapter<RecipeProduct> {
 	
 	private Context context;
-	private ArrayList<RecipeProduct> recipeProducts;
+	private List<RecipeProduct> recipeProducts;
 	
-	public RecipeProductListAdapter(Context context, ArrayList<RecipeProduct> recipeProducts) {
+	public RecipeProductListAdapter(Context context, List<RecipeProduct> recipeProducts) {
 		super(context, R.layout.list_item_recipe_product, recipeProducts);
 		this.context = context;
 		this.recipeProducts = recipeProducts;

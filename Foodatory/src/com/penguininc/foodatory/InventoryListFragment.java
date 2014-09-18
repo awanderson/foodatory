@@ -18,10 +18,10 @@ import android.widget.TextView;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.penguininc.foodatory.adapter.InventoryListAdapter;
 import com.penguininc.foodatory.adapter.InventoryListAdapter.ViewHolder;
+import com.penguininc.foodatory.framework.BasicFragment;
 import com.penguininc.foodatory.orm.dao.PantryDao;
 import com.penguininc.foodatory.orm.object.Pantry;
 import com.penguininc.foodatory.orm.object.Product;
-import com.penguininc.foodatory.templates.BasicFragment;
 
 public class InventoryListFragment extends BasicFragment{
 
@@ -35,7 +35,7 @@ public class InventoryListFragment extends BasicFragment{
 	InventoryListAdapter adapter;
 	private int mInventoryType;
 	private ViewHolder mPrevHolder;
-	
+	private int mRetention;
 	
 	@Override
 	protected int getLayout() {
@@ -67,11 +67,11 @@ public class InventoryListFragment extends BasicFragment{
 		// Get the number of days we keep our products from our settings
 		int retention_lookup = getActivity().getPreferences(0)
 				.getInt(SettingsFragment.PANTRY_RETENTION, SettingsFragment.PANTRY_RETENTION_DEFAULT);
-		int retention = SettingsFragment.PANTRY_RETENTION_ARRAY_DAYS[retention_lookup];
+		mRetention = SettingsFragment.PANTRY_RETENTION_ARRAY_DAYS[retention_lookup];
 		
 		try {
 			PantryDao pantryDao = getHelper().getPantryDao();
-			List<Pantry> pantries = pantryDao.queryForType(mInventoryType);
+			List<Pantry> pantries = pantryDao.queryForType(mInventoryType, mRetention);
 			adapter = new InventoryListAdapter(getActivity(), pantries, pantryDao, this);
 			listview.setAdapter(adapter);
 		} catch (SQLException e) {
@@ -119,7 +119,7 @@ public class InventoryListFragment extends BasicFragment{
 	public void refreshView() {
 		try {
 			PantryDao pantryDao = getHelper().getPantryDao();
-			List<Pantry> pantries = pantryDao.queryForType(mInventoryType);
+			List<Pantry> pantries = pantryDao.queryForType(mInventoryType, mRetention);
 			adapter = new InventoryListAdapter(getActivity(), pantries, pantryDao, this);
 			listview.setAdapter(adapter);
 		} catch (SQLException e) {

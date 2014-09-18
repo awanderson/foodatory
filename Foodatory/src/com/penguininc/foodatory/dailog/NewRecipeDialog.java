@@ -24,7 +24,7 @@ public class NewRecipeDialog extends DialogFragment {
 	public final static String RECIPE_DESCRIPTION = "recipe_description";
 	
 	private EditText mRecipeName;
-	private EditText mRecipeDescription;
+	//private EditText mRecipeDescription;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,7 +36,7 @@ public class NewRecipeDialog extends DialogFragment {
 		View view = inflater.inflate(R.layout.dialog_new_recipe, container);
 		
 		mRecipeName = (EditText)view.findViewById(R.id.recipe_name);
-		mRecipeDescription = (EditText)view.findViewById(R.id.recipe_description);
+		//mRecipeDescription = (EditText)view.findViewById(R.id.recipe_description);
 		
 		Button save = (Button)view.findViewById(R.id.save);
 		
@@ -47,7 +47,7 @@ public class NewRecipeDialog extends DialogFragment {
 				Intent i = new Intent();
 				if(StringUtilities.checkBasicString(mRecipeName.getText().toString())) {
 					i.putExtra(RECIPE_NAME, mRecipeName.getText().toString());
-					i.putExtra(RECIPE_DESCRIPTION, mRecipeDescription.getText().toString());
+					//i.putExtra(RECIPE_DESCRIPTION, mRecipeDescription.getText().toString());
 					getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, i);
 					dismiss();
 				} else {

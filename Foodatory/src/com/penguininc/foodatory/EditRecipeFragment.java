@@ -7,9 +7,7 @@ import java.util.Date;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -29,10 +27,9 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.penguininc.foodatory.sqlite.helper.RecipeHelper;
-import com.penguininc.foodatory.sqlite.loader.GenericLoaderCallbacks;
-import com.penguininc.foodatory.sqlite.model.Recipe;
-import com.penguininc.foodatory.templates.BasicFragment;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.penguininc.foodatory.framework.BasicFragment;
+import com.penguininc.foodatory.orm.object.Recipe;
 
 @SuppressLint("NewApi")
 public class EditRecipeFragment extends BasicFragment {
@@ -40,12 +37,12 @@ public class EditRecipeFragment extends BasicFragment {
 	EditText mRecipeName;
 	//EditText mRecipeDescription;
 	ImageView mImageView, mDefaultImage;
-	long mRecipeId;
 	RecipeDirectionFragment mDirectionFrag;
 	String mCurrentPhotoPath;
 	String mOldPhotoPath;
-	Recipe mCurrentRecipe;
 	Uri fileUri;
+	Recipe mRecipe;
+	RuntimeExceptionDao<Recipe, Integer> mRecipeDao;
 	
 	static final int REQUEST_TAKE_PHOTO = 1;
 	
@@ -60,9 +57,12 @@ public class EditRecipeFragment extends BasicFragment {
 		getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		
 		Bundle bundle = getArguments();
-		mRecipeId = bundle.getLong(Recipe.RECIPE_ID);
-		
+		mRecipe = (Recipe)bundle.getSerializable(Recipe.KEY);
+		Log.d(DEBUG_TAG, "color = " + mRecipe.getColor());
 		mRecipeName = (EditText)view.findViewById(R.id.recipe_name);
+		
+		
+		
 		//mRecipeDescription = (EditText)view.findViewById(R.id.recipe_description);
 		mImageView = (ImageView)view.findViewById(R.id.recipe_image);
 		mImageView.setOnClickListener(new OnClickListener() {
@@ -73,6 +73,24 @@ public class EditRecipeFragment extends BasicFragment {
 				Log.d("EditRecipeFragment", "view clicked");
 			}
 		});
+		
+		/*
+		 * Change the color of our background to match
+		 * the color for a given recipe
+		 */
+		if(mRecipe.getColor() == Recipe.BLUE) {
+			mImageView.setBackgroundColor(
+					getResources().getColor(R.color.blue_button_pressed));
+		} else if(mRecipe.getColor() == Recipe.GREEN) {
+			mImageView.setBackgroundColor(
+					getResources().getColor(R.color.green_button_pressed));
+		} else if(mRecipe.getColor() == Recipe.RED) {
+			mImageView.setBackgroundColor(
+					getResources().getColor(R.color.red_button));
+		} else {
+			mImageView.setBackgroundColor(
+					getResources().getColor(R.color.black_button));
+		}
 		
 		View mSpacer = (View)view.findViewById(R.id.spacer);
 		//make extra spacer launch picture intent too
@@ -85,52 +103,28 @@ public class EditRecipeFragment extends BasicFragment {
 		});
 		
 		mDefaultImage = (ImageView)view.findViewById(R.id.recipe_capture_image);
-		
-		//load recipe data
-		LoaderCallbacks<Recipe> callbacks = (new GenericLoaderCallbacks<Long, Recipe>(getActivity(), mRecipeId) {
+		mRecipeName.setText(mRecipe.getName());
+		mCurrentPhotoPath = mRecipe.getImage();
+		//Have to add an observer so we don't change the image 
+		//until after it has a width and height set
+		ViewTreeObserver vto = mImageView.getViewTreeObserver();
+		vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 
-			@Override
-			protected Recipe doInBackground(Long data) {
-				return (new RecipeHelper(context)).getRecipe(data);
-			}
+		    @Override
+		    public void onGlobalLayout() {
+		    	Log.d("EditRecipeFragment", "image height = " + mImageView.getHeight());
+		    	setPic();
+		        ViewTreeObserver obs = mImageView.getViewTreeObserver();
 
-			@Override
-			protected void loadFinished(Recipe r) {
-				mCurrentRecipe = r;
-				mRecipeName.setText(r.getName());
-				mCurrentPhotoPath = r.getImage();
-				//Have to add an observer so we don't change the image 
-				//until after it has a width and height set
-				ViewTreeObserver vto = mImageView.getViewTreeObserver();
-				vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+		        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+		            obs.removeOnGlobalLayoutListener(this);
+		        } else {
+		            obs.removeGlobalOnLayoutListener(this);
+		        }
+		    }
 
-				    @Override
-				    public void onGlobalLayout() {
-				    	Log.d("EditRecipeFragment", "image height = " + mImageView.getHeight());
-				    	setPic();
-				        ViewTreeObserver obs = mImageView.getViewTreeObserver();
-
-				        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-				            obs.removeOnGlobalLayoutListener(this);
-				        } else {
-				            obs.removeGlobalOnLayoutListener(this);
-				        }
-				    }
-
-				});
-				//mRecipeDescription.setText(r.getDescription());
-						
-			}
-
-			@Override
-			protected void resetLoader(Loader<Recipe> args) {
-				
-			}
-					
 		});
-				
-		getLoaderManager().initLoader(0, null, callbacks);
-				
+		
 		return view;
 		
 	}
@@ -138,16 +132,12 @@ public class EditRecipeFragment extends BasicFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
+		Log.d(DEBUG_TAG, "in on resume");
 		// load directions
-		if(mDirectionFrag == null) {
-			Log.d("EditRecipeFragment", "direction frag");
-			mDirectionFrag = new RecipeDirectionFragment();
-			mDirectionFrag.setArguments(getArguments());
-			getFragmentManager().beginTransaction()
-				.add(R.id.recipe_product_manager, mDirectionFrag).commit();
-		} else {
-			getFragmentManager().beginTransaction().attach(mDirectionFrag).commit();
-		}
+		mDirectionFrag = new RecipeDirectionFragment();
+		mDirectionFrag.setArguments(getArguments());
+		getFragmentManager().beginTransaction()
+			.replace(R.id.recipe_product_manager, mDirectionFrag).commit();
 				
 	}
 	
@@ -160,35 +150,14 @@ public class EditRecipeFragment extends BasicFragment {
 	@Override
 	public void onPause() {
 		super.onPause();
-		String recipe_name = mRecipeName.getText().toString();
-		//String recipe_description = mRecipeDescription.getText().toString();
-		Recipe r = new Recipe();
-		r.setName(recipe_name);
-		//r.setDescription(recipe_description);
-		r.setId(mRecipeId);
-		r.setImage(mCurrentPhotoPath);
-		LoaderCallbacks<Long> callbacks = 
-			(new GenericLoaderCallbacks<Recipe, Long>(getActivity(), r) {
-
-				@Override
-				protected Long doInBackground(Recipe data) {
-					(new RecipeHelper(context)).updateRecipe(data);
-					return null;
-				}
-
-				@Override
-				protected void loadFinished(Long output) {
-						
-				}
-
-				@Override
-				protected void resetLoader(Loader<Long> args) {
-						
-				}
-					
-			});
-		getLoaderManager().initLoader(1, null, callbacks);
-		getFragmentManager().beginTransaction().detach(mDirectionFrag).commit();
+		String recipeName = mRecipeName.getText().toString();
+		mRecipe.setName(recipeName);
+		mRecipe.setImage(mCurrentPhotoPath);
+		Log.d(DEBUG_TAG, "recipe color = " + mRecipe.getColor());
+		if(mRecipeDao == null) {
+			mRecipeDao = getHelper().getRecipeRuntimeExceptionDao();
+		}
+		mRecipeDao.update(mRecipe);
 	}
 	
 	@Override
@@ -196,15 +165,20 @@ public class EditRecipeFragment extends BasicFragment {
 	    if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
 	    	
 	    	if(data == null) {
-	    		Log.d(DEBUG_TAG, "data null");
+	    		// revert back to our old photo
+	    		mCurrentPhotoPath = mOldPhotoPath;
+	    		Log.d(DEBUG_TAG, "data is null");
+	    	} else{
+	    		setPic();
 	    	}
 	    	
-	    	setPic();
 	    	/*
 	        Bundle extras = data.getExtras();
 	        Bitmap imageBitmap = (Bitmap) extras.get("data");
 	        mImageView.setImageBitmap(imageBitmap);
 	    	*/
+	    } else {
+	    	mCurrentPhotoPath = mOldPhotoPath;
 	    }
 	}
 	
@@ -284,6 +258,10 @@ public class EditRecipeFragment extends BasicFragment {
 		    mImageView.setImageBitmap(bitmap);
 		}
 		    
+	}
+	
+	private void setColor() {
+		
 	}
 	
 }

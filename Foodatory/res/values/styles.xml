@@ -66,6 +66,12 @@
         <item name="android:inputType">textCapSentences</item>
     </style>
     
+    <style name="dark_shadow_edit_text" parent="@style/default_edit_text">
+        <item name="android:background">@drawable/dark_shadow_background</item>
+    </style>
+    
+    
+    
     <style name="multiline_edit_text">
        <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>

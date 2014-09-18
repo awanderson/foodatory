@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.penguininc.foodatory.R;
 import com.penguininc.foodatory.listener.ProductTypeSwitchListener;
-import com.penguininc.foodatory.sqlite.model.Product;
+import com.penguininc.foodatory.orm.object.Product;
 
 public class ProductTypeView extends LinearLayout {
 	

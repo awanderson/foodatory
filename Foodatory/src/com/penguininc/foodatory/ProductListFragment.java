@@ -15,9 +15,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.penguininc.foodatory.adapter.ProductListAdapter;
+import com.penguininc.foodatory.framework.BasicFragment;
 import com.penguininc.foodatory.orm.dao.ProductDao;
 import com.penguininc.foodatory.orm.object.Product;
-import com.penguininc.foodatory.templates.BasicFragment;
 
 public class ProductListFragment extends BasicFragment {
 
