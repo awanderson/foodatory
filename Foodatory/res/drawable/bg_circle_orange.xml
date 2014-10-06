@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+ 	<solid android:color="@color/orange_button" />
+    <corners
+    	android:topLeftRadius="@dimen/default_circle_radius"
+        android:topRightRadius="@dimen/default_circle_radius"
+        android:bottomLeftRadius="@dimen/default_circle_radius"
+        android:bottomRightRadius="@dimen/default_circle_radius"/>
+</shape>
