@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import com.penguininc.foodatory.adapter.NavDrawerListAdapter;
 import com.penguininc.foodatory.interfaces.ABSNewButtonListener;
 import com.penguininc.foodatory.interfaces.MainActivityInterface;
 import com.penguininc.foodatory.model.NavDrawerItem;
+import com.penguininc.foodatory.service.FreshFoodCheckerService;
 
 public class MainActivity extends Activity
 	implements MainActivityInterface{
@@ -126,6 +128,12 @@ public class MainActivity extends Activity
         displayView(display_frag);
         
         
+        // start our FreshFoodChecker service
+     	int frequency_lookup = getPreferences(0)
+     			.getInt(SettingsFragment.NOTIFICATION_FREQUENCY,
+     					SettingsFragment.NOTIFICATION_FREQUENCY_DEFAULT);
+     	SettingsFragment.setFoodCheckerNotificationAlarm(getApplicationContext(),
+     			frequency_lookup);
 	}
      
 	/**

@@ -33,16 +33,16 @@ public class Pantry
 	 */
 	public final static String KEY = "PANTRY_KEY";
 	
-	@DatabaseField(generatedId = true)
+	@DatabaseField(columnName="pantry_id", generatedId = true)
 	int id;
-	@DatabaseField(canBeNull = false, foreign=true,
-			foreignAutoRefresh = true)
+	@DatabaseField(columnName = "product_id", canBeNull = false,
+			foreign=true, foreignAutoRefresh = true)
 	Product product;
-	@DatabaseField
+	@DatabaseField(columnName="date_added")
 	Date date_added;
-	@DatabaseField
+	@DatabaseField(columnName="date_expire")
 	Date date_expire;
-	@DatabaseField
+	@DatabaseField(columnName="qty")
 	int qty;
 	
 	public Pantry() {

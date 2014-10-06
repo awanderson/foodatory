@@ -1,5 +1,5 @@
 #
-# generated on 2014/09/18 03:59:47
+# generated on 2014/09/18 05:58:40
 #
 # --table-start--
 dataClass=com.penguininc.foodatory.orm.object.Direction
@@ -7,16 +7,20 @@ tableName=direction
 # --table-fields-start--
 # --field-start--
 fieldName=id
+columnName=direction_id
 generatedId=true
 # --field-end--
 # --field-start--
 fieldName=content
+columnName=content
 # --field-end--
 # --field-start--
 fieldName=order
+columnName=order
 # --field-end--
 # --field-start--
 fieldName=recipe
+columnName=recipe_id
 canBeNull=false
 foreign=true
 foreignAutoRefresh=true
@@ -30,22 +34,27 @@ tableName=pantry
 # --table-fields-start--
 # --field-start--
 fieldName=id
+columnName=pantry_id
 generatedId=true
 # --field-end--
 # --field-start--
 fieldName=product
+columnName=product_id
 canBeNull=false
 foreign=true
 foreignAutoRefresh=true
 # --field-end--
 # --field-start--
 fieldName=date_added
+columnName=date_added
 # --field-end--
 # --field-start--
 fieldName=date_expire
+columnName=date_expire
 # --field-end--
 # --field-start--
 fieldName=qty
+columnName=qty
 # --field-end--
 # --table-fields-end--
 # --table-end--
@@ -56,19 +65,24 @@ tableName=product
 # --table-fields-start--
 # --field-start--
 fieldName=id
+columnName=product_id
 generatedId=true
 # --field-end--
 # --field-start--
-fieldName=productName
+fieldName=product_name
+columnName=product_name
 # --field-end--
 # --field-start--
 fieldName=qty
+columnName=qty
 # --field-end--
 # --field-start--
-fieldName=freshLength
+fieldName=fresh_length
+columnName=fresh_length
 # --field-end--
 # --field-start--
 fieldName=type
+columnName=type
 # --field-end--
 # --table-fields-end--
 # --table-end--
@@ -79,16 +93,20 @@ tableName=recipe
 # --table-fields-start--
 # --field-start--
 fieldName=id
+columnName=recipe_id
 generatedId=true
 # --field-end--
 # --field-start--
 fieldName=name
+columnName=name
 # --field-end--
 # --field-start--
 fieldName=description
+columnName=description
 # --field-end--
 # --field-start--
 fieldName=image
+columnName=image
 # --field-end--
 # --field-start--
 fieldName=directions
@@ -102,6 +120,7 @@ foreignCollectionEager=true
 # --field-end--
 # --field-start--
 fieldName=color
+columnName=color
 # --field-end--
 # --table-fields-end--
 # --table-end--
@@ -112,19 +131,23 @@ tableName=recipe_product
 # --table-fields-start--
 # --field-start--
 fieldName=id
+columnName=recipe_product_id
 generatedId=true
 # --field-end--
 # --field-start--
 fieldName=product_qty
+columnName=product_qty
 # --field-end--
 # --field-start--
 fieldName=product
+columnName=product_id
 canBeNull=false
 foreign=true
 foreignAutoRefresh=true
 # --field-end--
 # --field-start--
 fieldName=recipe
+columnName=recipe_id
 canBeNull=false
 foreign=true
 foreignAutoRefresh=true
@@ -138,19 +161,23 @@ tableName=shopping_list
 # --table-fields-start--
 # --field-start--
 fieldName=id
+columnName=shopping_list_id
 generatedId=true
 # --field-end--
 # --field-start--
 fieldName=checked
+columnName=checked
 # --field-end--
 # --field-start--
 fieldName=product
+columnName=product_id
 canBeNull=false
 foreign=true
 foreignAutoRefresh=true
 # --field-end--
 # --field-start--
 fieldName=qty
+columnName=qty
 # --field-end--
 # --table-fields-end--
 # --table-end--

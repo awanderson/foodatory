@@ -1,5 +1,7 @@
 package com.penguininc.foodatory;
 
+import java.sql.SQLException;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,6 +17,8 @@ import android.widget.LinearLayout;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.penguininc.foodatory.framework.BasicFragment;
 import com.penguininc.foodatory.listener.ProductTypeSwitchListener;
+import com.penguininc.foodatory.orm.dao.ProductDao;
+import com.penguininc.foodatory.orm.dao.RecipeProductDao;
 import com.penguininc.foodatory.orm.object.Product;
 import com.penguininc.foodatory.view.CounterView;
 import com.penguininc.foodatory.view.ProductTypeView;
@@ -103,9 +107,12 @@ public class EditProductFragment extends BasicFragment {
 		if(item.getItemId() == R.id.action_delete) {
 			
 			if(mProduct != null) {
-				RuntimeExceptionDao<Product, Integer> dao = 
-						getHelper().getProductRuntimeExceptionDao();
-				dao.delete(mProduct);
+				try {
+					ProductDao productDao = getHelper().getProductDao();
+					productDao.delete(mProduct, getHelper());
+				} catch (SQLException e) {
+					
+				}
 				getActivity().finish();
 			}
 		} else {

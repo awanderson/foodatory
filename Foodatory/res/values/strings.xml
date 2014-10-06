@@ -91,8 +91,8 @@
 	<color name="silver_button">#cccccc</color>
 	<color name="silver_button_pressed">#d8d8d8</color>
 	
-	<color name="orange_buton">#ffb836</color>
-	<color name="orange_buton_pressed">#d69a2d</color>
+	<color name="orange_button">#ffb836</color>
+	<color name="orange_button_pressed">#d69a2d</color>
 	
 	<color name="yellow_button">#dcdc40</color>
 	<color name="yellow_button_pressed">#cece3c</color>

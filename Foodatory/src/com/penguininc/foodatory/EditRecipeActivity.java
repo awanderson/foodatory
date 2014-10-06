@@ -1,6 +1,7 @@
 package com.penguininc.foodatory;
 
-import android.app.Activity;
+import java.sql.SQLException;
+
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,8 +9,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.penguininc.foodatory.framework.BasicActivity;
+import com.penguininc.foodatory.orm.dao.RecipeDao;
 import com.penguininc.foodatory.orm.object.Product;
 import com.penguininc.foodatory.orm.object.Recipe;
 import com.penguininc.foodatory.view.Tab;
@@ -69,10 +70,17 @@ public class EditRecipeActivity extends BasicActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		
 		if(item.getItemId() == R.id.action_delete){
-			
+			/*
 			RuntimeExceptionDao<Recipe, Integer> recipeDao = 
 					getHelper().getRecipeRuntimeExceptionDao();
-			recipeDao.delete(recipe);
+			*/
+			try {
+				RecipeDao recipeDao = getHelper().getRecipeDao();
+				recipeDao.delete(recipe);
+			} catch (SQLException e) {
+				
+			}
+			
 			finish();
  			Toast.makeText(this,"Recipe Removed",Toast.LENGTH_SHORT).show();
 		} else {

@@ -71,6 +71,7 @@ public class RecipeProductFragment extends BasicFragment {
 				DialogFragment frag = new QuantityPickerDialog();
             	frag.setTargetFragment(mThis, EDIT_PRODUCT);
             	Bundle bundle = new Bundle();
+            	bundle.putSerializable(RecipeProduct.KEY, rp);
             	bundle.putInt(QuantityPickerDialog.STARTING_VALUE_KEY,
             			rp.getProductQty());
             	bundle.putInt(QuantityPickerDialog.SAVE_TARGET_KEY, EDIT_PRODUCT_QUANTITY);
@@ -96,7 +97,8 @@ public class RecipeProductFragment extends BasicFragment {
 			
 			@Override
 			public void onClick(View v) {
-				DialogFragment frag = new ProductPickerDialog();
+				ProductPickerDialog frag = new ProductPickerDialog();
+				frag.setRemoveProducts(getProducts());
 				Bundle bundle = new Bundle();
 				bundle.putInt(ProductPickerDialog.NEW_PRODUCT_REQUEST_CODE_KEY,
 						NEW_PRODUCT);
@@ -120,23 +122,8 @@ public class RecipeProductFragment extends BasicFragment {
 		Log.d("recipe product", "in on activity");
 	    switch(requestCode) {
 	    	
-	    // product selected, lets get the quantity now
-	    case NEW_RECIPE_PRODUCT:
-	    	if(resultCode == Activity.RESULT_OK) {
-	    		// save product for later use
-	    		newProduct = (Product)data.getSerializableExtra(Product.KEY);
-	    		DialogFragment frag = new QuantityPickerDialog();
-	    		frag.setTargetFragment(this, NEW_RECIPE_PRODUCT_WITH_QUANTITY);
-	    		Bundle bundle = new Bundle();
-	    		bundle.putInt(QuantityPickerDialog.STARTING_VALUE_KEY, 1);
-	    		frag.setArguments(bundle);
-	    		frag.show(getFragmentManager().beginTransaction(), 
-	    				"New Recipe Product with Quantity");
-	    		
-	    	}
-	    	break;
-	    
 	    // new product
+	    case NEW_RECIPE_PRODUCT:
 	    case NEW_PRODUCT:
 	    	if (resultCode == Activity.RESULT_OK) {
 	          	// save serialized product
@@ -145,6 +132,14 @@ public class RecipeProductFragment extends BasicFragment {
 	           	//get quantity dialog
 	           	DialogFragment frag = new QuantityPickerDialog();
 	           	bundle.putInt(QuantityPickerDialog.STARTING_VALUE_KEY, 1);
+	           	// set our super incrementer and decrementer only if
+				// we don't have a condiment
+				if(newProduct.getType() != Product.CONDIMENT) {
+					bundle.putInt(QuantityPickerDialog.SUPER_INCREMENTER_KEY, 
+							newProduct.getQty());
+					bundle.putInt(QuantityPickerDialog.SUPER_DECREMENTER_KEY, 
+							newProduct.getQty());
+				}
 	           	frag.setArguments(bundle);
 	           	frag.setTargetFragment(this, NEW_RECIPE_PRODUCT_WITH_QUANTITY);
 	           	frag.show(getFragmentManager().beginTransaction(),
@@ -181,7 +176,9 @@ public class RecipeProductFragment extends BasicFragment {
 	            break;
 	        
 	        case EDIT_PRODUCT:
+	        	Log.d(DEBUG_TAG, "in EDIT_PRODUCT");
 	        	if(resultCode == DELETE_PRODUCT) {
+	        		Log.d(DEBUG_TAG, "in DELETE_PRODUCT");
 	        		RecipeProduct recipeProduct = 
 	        				(RecipeProduct)data.getSerializableExtra(RecipeProduct.KEY);
 	        		if(recipeProductDao == null) {
@@ -196,9 +193,13 @@ public class RecipeProductFragment extends BasicFragment {
 	        		RecipeProduct recipeProduct = 
 	        				(RecipeProduct)data.getSerializableExtra(RecipeProduct.KEY);
 	        		
+	        		Log.d(DEBUG_TAG, "RecipeProduct = " + recipeProduct.getProduct().getProductName());
+	        		
 	        		if(recipeProductDao == null) {
 	        			recipeProductDao = getHelper().getRecipeProductRuntimeExceptionDao();
 	        		}
+	        		int qty = data.getIntExtra(QuantityPickerDialog.CHOSEN_QUANTITY, 1);
+	        		recipeProduct.setProductQty(qty);
 	        		recipeProductDao.update(recipeProduct);
 	        		adapter.notifyDataSetChanged();
 	        		
@@ -206,5 +207,22 @@ public class RecipeProductFragment extends BasicFragment {
 	        	
 	        	break;
 	    }
+	}
+	/**
+	 * Function to get all the products that are currently
+	 * displayed in our recipeproduct list, used so we can
+	 * not display them to the user when they add a new
+	 * product
+	 * @return a list of all the products in the 
+	 * recipeproduct list. Doesn't check for duplicates,
+	 * assumed list is properly maintained and doesn't
+	 * contain duplicates
+	 */
+	private List<Product> getProducts() {
+		List<Product> products = new ArrayList<Product>();
+		for(int i = 0; i < adapter.getCount(); i++) {
+			products.add(adapter.getItem(i).getProduct());
+		}
+		return products;
 	}
 }

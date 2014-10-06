@@ -1,6 +1,8 @@
 package com.penguininc.foodatory.adapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import android.app.Activity;
@@ -12,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.penguininc.foodatory.R;
@@ -27,6 +30,7 @@ public class ProductListAdapter extends ArrayAdapter<Product>
 	public ProductListAdapter(Context context, List<Product> products) {
 		super(context, R.layout.list_item_product, products);
 		this.context = context;
+		Collections.sort(products, new ProductListAdapterComparator());
 		this.products = products;
 		this.original_products = new ArrayList<Product>(products);
 	}
@@ -42,6 +46,10 @@ public class ProductListAdapter extends ArrayAdapter<Product>
 	        mHolder.product_freshness = (TextView)convertView.findViewById(R.id.product_freshness);
 	        mHolder.product_name = (TextView)convertView.findViewById(R.id.product_name);
 	        mHolder.product_qty = (TextView)convertView.findViewById(R.id.product_qty);
+	        mHolder.product_freshness_wrapper = (LinearLayout)convertView.
+	        		findViewById(R.id.product_freshness_wrapper);
+	        mHolder.product_qty_wrapper = (LinearLayout)convertView.
+	        		findViewById(R.id.product_qty_wrapper);
 	        convertView.setTag(mHolder);
 	    } else {
 	    	mHolder = (ViewHolder)convertView.getTag();
@@ -50,9 +58,17 @@ public class ProductListAdapter extends ArrayAdapter<Product>
 		Product p = products.get(position);
 	
 		mHolder.product_name.setText(p.getProductName());
+		// hide our freshness length if we don't have fresh food
+		if(p.getType() != Product.FRESH_FOOD) {
+			mHolder.product_freshness_wrapper.setVisibility(View.GONE);
+		}
+		// hide our qty if we have a condiment
+		if(p.getType() == Product.CONDIMENT) {
+			mHolder.product_qty_wrapper.setVisibility(View.GONE);
+		}
 		mHolder.product_qty.setText(String.valueOf(p.getQty()));
 		mHolder.product_freshness.setText(String.valueOf(p.getFreshLength()));
-		 
+		
 		return convertView;
 	}
 	
@@ -107,6 +123,25 @@ public class ProductListAdapter extends ArrayAdapter<Product>
 	
 	public static class ViewHolder {
 		TextView product_name, product_qty, product_freshness;
+		LinearLayout product_qty_wrapper, product_freshness_wrapper;
+	}
+	
+	@Override
+	public void add(Product product) {
+		super.add(product);
+		Collections.sort(products, new ProductListAdapterComparator());
+	}
+	
+	public class ProductListAdapterComparator
+			implements Comparator<Product> {
+		
+		@Override
+		public int compare(Product p1, Product p2) {
+			return p1.getProductName().compareTo(
+					p2.getProductName());
+					
+		}
+		
 	}
 	
 }

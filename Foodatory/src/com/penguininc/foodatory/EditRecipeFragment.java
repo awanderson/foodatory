@@ -1,5 +1,12 @@
 package com.penguininc.foodatory;
 
+/**
+ * Info and editing page for Recipes.d
+ * 
+ * 
+ * 
+ */
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -24,12 +31,21 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.penguininc.foodatory.framework.BasicFragment;
 import com.penguininc.foodatory.orm.object.Recipe;
+import com.penguininc.foodatory.utilities.ImageScaler;
 
 @SuppressLint("NewApi")
 public class EditRecipeFragment extends BasicFragment {
@@ -37,12 +53,15 @@ public class EditRecipeFragment extends BasicFragment {
 	EditText mRecipeName;
 	//EditText mRecipeDescription;
 	ImageView mImageView, mDefaultImage;
+	View mRecipeColorView;
 	RecipeDirectionFragment mDirectionFrag;
 	String mCurrentPhotoPath;
 	String mOldPhotoPath;
 	Uri fileUri;
 	Recipe mRecipe;
 	RuntimeExceptionDao<Recipe, Integer> mRecipeDao;
+	private ImageLoader imageLoader;
+	boolean takingImage = false;
 	
 	static final int REQUEST_TAKE_PHOTO = 1;
 	
@@ -61,6 +80,12 @@ public class EditRecipeFragment extends BasicFragment {
 		Log.d(DEBUG_TAG, "color = " + mRecipe.getColor());
 		mRecipeName = (EditText)view.findViewById(R.id.recipe_name);
 		
+		// get our image loader
+		imageLoader = ImageLoader.getInstance();
+		// Create global configuration and initialize ImageLoader with this configuration
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration
+        		.Builder(getActivity()).build();
+        imageLoader.init(config);
 		
 		
 		//mRecipeDescription = (EditText)view.findViewById(R.id.recipe_description);
@@ -78,17 +103,18 @@ public class EditRecipeFragment extends BasicFragment {
 		 * Change the color of our background to match
 		 * the color for a given recipe
 		 */
+		mRecipeColorView = view.findViewById(R.id.recipe_color);
 		if(mRecipe.getColor() == Recipe.BLUE) {
-			mImageView.setBackgroundColor(
+			mRecipeColorView.setBackgroundColor(
 					getResources().getColor(R.color.blue_button_pressed));
 		} else if(mRecipe.getColor() == Recipe.GREEN) {
-			mImageView.setBackgroundColor(
+			mRecipeColorView.setBackgroundColor(
 					getResources().getColor(R.color.green_button_pressed));
 		} else if(mRecipe.getColor() == Recipe.RED) {
-			mImageView.setBackgroundColor(
+			mRecipeColorView.setBackgroundColor(
 					getResources().getColor(R.color.red_button));
 		} else {
-			mImageView.setBackgroundColor(
+			mRecipeColorView.setBackgroundColor(
 					getResources().getColor(R.color.black_button));
 		}
 		
@@ -164,19 +190,7 @@ public class EditRecipeFragment extends BasicFragment {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
 	    	
-	    	if(data == null) {
-	    		// revert back to our old photo
-	    		mCurrentPhotoPath = mOldPhotoPath;
-	    		Log.d(DEBUG_TAG, "data is null");
-	    	} else{
-	    		setPic();
-	    	}
-	    	
-	    	/*
-	        Bundle extras = data.getExtras();
-	        Bitmap imageBitmap = (Bitmap) extras.get("data");
-	        mImageView.setImageBitmap(imageBitmap);
-	    	*/
+	    	setPic();
 	    } else {
 	    	mCurrentPhotoPath = mOldPhotoPath;
 	    }
@@ -188,13 +202,11 @@ public class EditRecipeFragment extends BasicFragment {
 	    String imageFileName = "JPEG_" + timeStamp + "_";
 	    File storageDir = Environment.getExternalStoragePublicDirectory(
 	            Environment.DIRECTORY_PICTURES);
-	    Log.d("EditRecipeFragment", "Got storageDir");
 	    File image = File.createTempFile(
 	        imageFileName,  /* prefix */
-	        ".jpg",         /* suffix */
-	        storageDir      /* directory */
+	        ".jpg", 	/* suffix */
+	        storageDir
 	    );
-	    Log.d("EditRecipeFragment", "couldn't create temp file");
 	    //Save the old path incase we don't get a new valid picture file
 	    mOldPhotoPath = mCurrentPhotoPath;
 	    // Save a file: path for use with ACTION_VIEW intents
@@ -220,6 +232,7 @@ public class EditRecipeFragment extends BasicFragment {
 	            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
 	                    Uri.fromFile(photoFile));
 	            takePictureIntent.putExtra(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+	            takingImage = true;
 	            startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
 	        }
 	    }
@@ -227,14 +240,14 @@ public class EditRecipeFragment extends BasicFragment {
 	
 	private void setPic() {
 		if(mCurrentPhotoPath != null && mCurrentPhotoPath != "") {
+			
 			// Get the dimensions of the View
-		    int targetW = mImageView.getWidth();
-		    int targetH = mImageView.getHeight();
+		    final int targetW = mImageView.getWidth();
+		    final int targetH = mImageView.getHeight();
 	
 		    // Get the dimensions of the bitmap
 		    BitmapFactory.Options bmOptions = new BitmapFactory.Options();
 		    bmOptions.inJustDecodeBounds = true;
-		    BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
 		    int photoW = bmOptions.outWidth;
 		    int photoH = bmOptions.outHeight;
 	
@@ -246,22 +259,59 @@ public class EditRecipeFragment extends BasicFragment {
 		    bmOptions.inSampleSize = scaleFactor;
 		    bmOptions.inPurgeable = true;
 		    
-		    Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-		    if(bitmap == null || bitmap.getByteCount() == 0) {
-		    	Log.d(DEBUG_TAG, "Bitmap no good");
-		    	mCurrentPhotoPath = mOldPhotoPath;
-		    	mOldPhotoPath = null;
-		    	setPic();
-		    } else {
-		    	mDefaultImage.setVisibility(View.GONE);
-		    }
-		    mImageView.setImageBitmap(bitmap);
+		    ImageSize targetSize = new ImageSize(targetW, targetH);
+		    
+		    imageLoader.loadImage("file://"+mCurrentPhotoPath,
+		    		targetSize, null, 
+		    		new SimpleImageLoadingListener() {
+		    	
+		    	@Override
+		    	public void onLoadingComplete(String imageUri, View view, 
+		    			Bitmap bitmap) {
+		    		mImageView.setVisibility(View.INVISIBLE);
+		    		mImageView.setImageBitmap(bitmap);
+		    		mDefaultImage.setVisibility(View.GONE);
+		    		AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
+		    		anim.setDuration(500);
+		    		anim.setAnimationListener(new AnimationListener() {
+						
+						@Override
+						public void onAnimationStart(Animation animation) {
+							// TODO Auto-generated method stub
+							
+						}
+						
+						@Override
+						public void onAnimationRepeat(Animation animation) {
+							// TODO Auto-generated method stub
+							
+						}
+						
+						@Override
+						public void onAnimationEnd(Animation animation) {
+							mImageView.setVisibility(View.VISIBLE);
+						}
+					});
+		    		mImageView.startAnimation(anim);
+		    		if(takingImage) {
+		    			Log.d(DEBUG_TAG, "takingImage is true");
+						takingImage = false;
+						ImageScaler.scaleImage(bitmap, targetW, targetH, mCurrentPhotoPath);
+					}
+		    	}
+		    	
+		    	@Override
+		    	public void onLoadingFailed(String imageUri, View view,
+		    			FailReason failReason) {
+			    	mCurrentPhotoPath = mOldPhotoPath;
+			    	mOldPhotoPath = null;
+			    	setPic();
+		    	}
+		    	
+		    });
+		    
 		}
 		    
-	}
-	
-	private void setColor() {
-		
 	}
 	
 }

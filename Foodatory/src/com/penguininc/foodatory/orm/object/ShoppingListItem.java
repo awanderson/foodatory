@@ -20,17 +20,18 @@ public class ShoppingListItem
 	 */
 	public final static String KEY = "shopping_list_item_key";
 	
-	@DatabaseField(generatedId = true)
+	@DatabaseField(columnName="shopping_list_id",
+			generatedId = true)
 	int id;
 	
-	@DatabaseField
+	@DatabaseField(columnName="checked")
 	boolean checked;
 	
-	@DatabaseField(canBeNull = false, foreign = true,
-			foreignAutoRefresh = true)
+	@DatabaseField(columnName="product_id", canBeNull = false,
+			foreign = true,	foreignAutoRefresh = true)
 	Product product;
 	
-	@DatabaseField
+	@DatabaseField(columnName="qty")
 	int qty;
 	
 	public ShoppingListItem() {

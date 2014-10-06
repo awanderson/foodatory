@@ -1,11 +1,19 @@
 package com.penguininc.foodatory;
 
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,9 +26,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.penguininc.foodatory.framework.HomeScreenFragment;
-
-
-
+import com.penguininc.foodatory.service.FreshFoodCheckerService;
 
 public class SettingsFragment extends HomeScreenFragment {
 	
@@ -32,10 +38,14 @@ public class SettingsFragment extends HomeScreenFragment {
 	
 	public static final String[] NOTIFICATION_FREQUENCY_ARRAY = {"Daily", "Weekly",
 		"Monthly", "Never"};
+	public static final int[] NOTIFICATION_FREQUENCY_ARRAY_DAYS = {1, 7, 30, -1};
 	public static final String[] PANTRY_RETENTION_ARRAY = {"Never", "1 Day", "2 Days"
 		, "4 days", "1 Week", "Forever"};
 	public static final int[] PANTRY_RETENTION_ARRAY_DAYS = {0, 1, 2, 4, 7, -1};
 	
+	private static final int FOOD_CHECKER_ALARM_ID = 1;
+	
+	private static final String DEBUG_TAG = "SettingsFragment";
 	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -83,6 +93,7 @@ public class SettingsFragment extends HomeScreenFragment {
 				SharedPreferences settings = getActivity().getPreferences(0);
 				Editor editor = settings.edit();
 				editor.putInt(NOTIFICATION_FREQUENCY, position);
+				setFoodCheckerNotificationAlarm(getActivity(), position);
 				editor.commit();
 			}
 
@@ -117,5 +128,56 @@ public class SettingsFragment extends HomeScreenFragment {
 		});
 		return view;
 		
+	}
+	
+	/**
+	 * Sets the alarm for our food checker
+	 * @param frequency how often to notify user, should be the index
+	 * of NOTIFICATION_FREQUENCY_ARRAY_DAYS or NOTIFICATION_FREQUENCY_ARRAY
+	 */
+	public static void setFoodCheckerNotificationAlarm(Context context, int frequency) {
+		
+		// get our pending intent
+		Intent foodCheckerIntent = new Intent(context,
+				FreshFoodCheckerService.class);
+		PendingIntent pendingIntent = PendingIntent.getService(context,
+				FOOD_CHECKER_ALARM_ID, foodCheckerIntent,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		AlarmManager alarm = (AlarmManager)context
+				.getSystemService(Context.ALARM_SERVICE);
+		// cancel our alarm so we don't have multiple notifications going off
+		alarm.cancel(pendingIntent);
+		// if our frequency is -1, we don't want any notifications
+		// so we can just return
+		if(NOTIFICATION_FREQUENCY_ARRAY_DAYS[frequency] == -1) {
+			return;
+		}
+		// set our alarm to go off around 6
+		long currentTime = System.currentTimeMillis();
+		long triggerAtMillis = (1000*60*60*24) * 18 - currentTime;
+		// if our time is negative, add a day to get the right time
+		if(triggerAtMillis < 0) {
+			triggerAtMillis += (1000*60*60*24) * 24;
+		}
+		
+		Calendar cur_cal = new GregorianCalendar();
+		cur_cal.setTimeInMillis(System.currentTimeMillis());//set the current time and date for this calendar
+
+		Calendar cal = new GregorianCalendar();
+		cal.add(Calendar.DAY_OF_YEAR, cur_cal.get(Calendar.DAY_OF_YEAR));
+		cal.set(Calendar.HOUR_OF_DAY, 18);
+		cal.set(Calendar.SECOND, cur_cal.get(Calendar.SECOND));
+		cal.set(Calendar.MILLISECOND, cur_cal.get(Calendar.MILLISECOND));
+		cal.set(Calendar.DATE, cur_cal.get(Calendar.DATE));
+		cal.set(Calendar.MONTH, cur_cal.get(Calendar.MONTH));
+		
+		long intervalMillis = (1000*60*60*24)
+				* NOTIFICATION_FREQUENCY_ARRAY_DAYS[frequency];
+		
+		Log.d(DEBUG_TAG, "triggerAtMillis = " + triggerAtMillis);
+		
+		// set our alarm
+		alarm.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+				cal.getTimeInMillis(), intervalMillis, pendingIntent);
 	}
 }

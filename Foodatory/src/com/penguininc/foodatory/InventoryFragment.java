@@ -37,7 +37,6 @@ public class InventoryFragment extends HomeScreenFragment {
 	
 	private static final int NEW_INVENTORY = 1;
 	private static final int NEW_INVENTORY_WITH_QUANTITY = 2;
-	private static final int NEW_INVENTORY_VALUE = 3;
 	public static final int NEW_PRODUCT = 4;
 	
 	
@@ -109,23 +108,6 @@ public class InventoryFragment extends HomeScreenFragment {
 		switch(requestCode) {
 		
 		case NEW_INVENTORY:
-			if(resultCode == Activity.RESULT_OK) {
-				// save product for later use
-				newProduct = (Product)data.getSerializableExtra(Product.KEY);
-				
-				DialogFragment frag = new QuantityPickerDialog();
-				frag.setTargetFragment(this, NEW_INVENTORY_WITH_QUANTITY);
-				Bundle bundle = new Bundle();
-				// no delete button
-				bundle.putBoolean(QuantityPickerDialog.DELETE_TOGGLE_KEY, false);
-				bundle.putInt(QuantityPickerDialog.STARTING_VALUE_KEY, 1);
-				frag.setArguments(bundle);
-				frag.show(getFragmentManager().beginTransaction(),
-						"New Inventory with Quantity");
-				
-			}
-			break;
-		
 		case NEW_PRODUCT:
 			if(resultCode == Activity.RESULT_OK) {
 				//save serialized product on, and launch quantity
@@ -135,6 +117,14 @@ public class InventoryFragment extends HomeScreenFragment {
 				bundle.putInt(QuantityPickerDialog.STARTING_VALUE_KEY, 1);
 				bundle.putBoolean(QuantityPickerDialog.DELETE_TOGGLE_KEY, false);
 				bundle.putInt(QuantityPickerDialog.SAVE_TARGET_KEY, Activity.RESULT_OK);
+				// set our super incrementer and decrementer only if
+				// we don't have a condiment
+				if(newProduct.getType() != Product.CONDIMENT) {
+					bundle.putInt(QuantityPickerDialog.SUPER_INCREMENTER_KEY, 
+							newProduct.getQty());
+					bundle.putInt(QuantityPickerDialog.SUPER_DECREMENTER_KEY, 
+							newProduct.getQty());
+				}
 				frag.setArguments(bundle);
 				frag.setTargetFragment(this, NEW_INVENTORY_WITH_QUANTITY);
 				frag.show(getFragmentManager().beginTransaction(), "New Inventory with Quantity");

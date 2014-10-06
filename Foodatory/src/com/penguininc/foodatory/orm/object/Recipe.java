@@ -38,16 +38,17 @@ public class Recipe implements Serializable {
 	public final static int BLACK = 3;
 	
 	
-	@DatabaseField(generatedId=true)
+	@DatabaseField(columnName="recipe_id", 
+			generatedId=true)
 	int id;
 	
-	@DatabaseField
+	@DatabaseField(columnName="name")
 	String name;
 	
-	@DatabaseField
+	@DatabaseField(columnName="description")
 	String description;
 	
-	@DatabaseField
+	@DatabaseField(columnName="image")
 	String image;
 	
 	@ForeignCollectionField(eager = true)
@@ -56,7 +57,7 @@ public class Recipe implements Serializable {
 	@ForeignCollectionField(eager = true)
 	ForeignCollection<RecipeProduct> recipeProducts;
 	
-	@DatabaseField
+	@DatabaseField(columnName="color")
 	int color;
 	
 

@@ -1,19 +1,21 @@
 package com.penguininc.foodatory.dailog;
 
-import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.LinearLayout.LayoutParams;
 
 import com.penguininc.foodatory.R;
+import com.penguininc.foodatory.orm.object.RecipeProduct;
 import com.penguininc.foodatory.view.CounterView;
 
 /**
@@ -21,8 +23,12 @@ import com.penguininc.foodatory.view.CounterView;
  * is returned in the bundle under the CHOSEN_QUANTITY
  * key
  * 
+ * Any argument passed in the bundle will be returned
+ * to the target fragment
+ * 
  * Set the behavior of box by setting the keys
  * in the bundle when you launch the fragment
+ * 
  * 
  * The following keys expect the following type:
  * 
@@ -31,6 +37,8 @@ import com.penguininc.foodatory.view.CounterView;
  * DELETE_TOGGLE_KEY -> boolean
  * DELETE_TARGET_KEY -> int != 0
  * SAVE_TARGET_KEY -> int != 0
+ * SUPER_INCREMENTER_KEY -> int > 0
+ * SUPER_DECREMENTER_KEY -> int > 0
  * 
  * @author Alec Anderson
  *
@@ -54,6 +62,8 @@ public class QuantityPickerDialog extends DialogFragment {
 	public final static String DELETE_TOGGLE_KEY = "delete_key";
 	public final static String DELETE_TARGET_KEY = "delete_target_key";
 	public final static String SAVE_TARGET_KEY = "save_target_key";
+	public final static String SUPER_INCREMENTER_KEY = "super_incrementer_key";
+	public final static String SUPER_DECREMENTER_KEY = "super_decremeneter_key";
 	
 	/*
 	 * Default settings for our various values
@@ -70,6 +80,8 @@ public class QuantityPickerDialog extends DialogFragment {
 	 */
 	public final static String CHOSEN_QUANTITY = "chosen_quantity";
 	
+	public final static String DEBUG_TAG = "QuantityPickerDialog";
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -80,6 +92,10 @@ public class QuantityPickerDialog extends DialogFragment {
 		
 		counterView = (CounterView)view.findViewById(R.id.quantity);
 		
+		// get the data sent and send it back
+		final Bundle sentArgs = getArguments();
+		RecipeProduct rp = (RecipeProduct)
+				sentArgs.getSerializable(RecipeProduct.KEY);
 		/*
 		 * Load our various settings
 		 */
@@ -107,6 +123,15 @@ public class QuantityPickerDialog extends DialogFragment {
 			saveTargetKey = DEFAULT_SAVE_TARGET;
 		}
 		
+		// try loading the super incrementer and decrementer
+		int superIncrementer = getArguments().getInt(SUPER_INCREMENTER_KEY);
+		int superDecrementer = getArguments().getInt(SUPER_DECREMENTER_KEY);
+		if(superIncrementer > 0 && superDecrementer > 0) {
+			counterView.setSuperValues(superIncrementer, superDecrementer);
+		} else {
+			counterView.useThirdWidth();
+		}
+		
 		// delete button toggle
 		deleteToggle = getArguments().getBoolean(DELETE_TOGGLE_KEY);
 		
@@ -118,6 +143,7 @@ public class QuantityPickerDialog extends DialogFragment {
 			public void onClick(View v) {
 				Intent i = new Intent();
 				i.putExtra(CHOSEN_QUANTITY, counterView.getValue());
+				i.putExtras(sentArgs);
 				getTargetFragment().onActivityResult(getTargetRequestCode(), 
 						saveTargetKey, i);
 				dismiss();
@@ -133,6 +159,7 @@ public class QuantityPickerDialog extends DialogFragment {
 				@Override
 				public void onClick(View v) {
 					Intent i = new Intent();
+					i.putExtras(sentArgs);
 					getTargetFragment().onActivityResult(getTargetRequestCode(),
 							deleteTargetKey, i);
 					dismiss();

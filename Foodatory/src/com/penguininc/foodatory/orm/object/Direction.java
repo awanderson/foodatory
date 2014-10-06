@@ -31,17 +31,18 @@ public class Direction implements Serializable{
 	 */
 	public final static String KEY = "direction_key";
 	
-	@DatabaseField(generatedId = true)
+	@DatabaseField(columnName="direction_id", 
+			generatedId = true)
 	int id;
 	
-	@DatabaseField
+	@DatabaseField(columnName="content")
 	String content;
 	
-	@DatabaseField
+	@DatabaseField(columnName="order")
 	int order;
 	
-	@DatabaseField(canBeNull = false, foreign = true,
-			foreignAutoRefresh = true)
+	@DatabaseField(columnName = "recipe_id", canBeNull = false,
+			foreign = true, foreignAutoRefresh = true)
 	Recipe recipe;
 	
 	public Direction() {

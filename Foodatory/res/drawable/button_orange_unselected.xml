@@ -40,7 +40,7 @@
     <!-- Background -->
     <item>
 	<shape>
-            <solid android:color="@color/orange_buton" />
+            <solid android:color="@color/orange_button" />
 	    <corners android:radius="3dp" />
 	</shape>
     </item>

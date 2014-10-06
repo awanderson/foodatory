@@ -1,5 +1,7 @@
 package com.penguininc.foodatory.adapter;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import android.app.Activity;
@@ -21,6 +23,7 @@ public class RecipeProductListAdapter extends ArrayAdapter<RecipeProduct> {
 	public RecipeProductListAdapter(Context context, List<RecipeProduct> recipeProducts) {
 		super(context, R.layout.list_item_recipe_product, recipeProducts);
 		this.context = context;
+		Collections.sort(recipeProducts, new RecipeProductListAdapterComparator());
 		this.recipeProducts = recipeProducts;
 	}
 	
@@ -38,6 +41,22 @@ public class RecipeProductListAdapter extends ArrayAdapter<RecipeProduct> {
 		mProductName.setText(recipeProducts.get(position).getProduct().getProductName());
 		mProductQty.setText(String.valueOf(recipeProducts.get(position).getProductQty()));		 
 		return convertView;
+	}
+	
+	@Override
+	public void add(RecipeProduct recipeProduct) {
+		super.add(recipeProduct);
+		Collections.sort(recipeProducts, new RecipeProductListAdapterComparator());
+	}
+	
+	public class RecipeProductListAdapterComparator
+			implements Comparator<RecipeProduct> {
+		
+		@Override
+		public int compare(RecipeProduct rp1, RecipeProduct rp2) {
+			return rp1.getProduct().getProductName().compareTo(
+					rp2.getProduct().getProductName());
+		}
 	}
 	
 }

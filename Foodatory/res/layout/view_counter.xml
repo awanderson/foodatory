@@ -1,37 +1,108 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
-	<Button
-	 	android:id="@+id/increment"
-	   	android:layout_width="match_parent"
-	   	android:layout_height="0dp"
-	   	android:layout_weight="1"
-	  	android:text="+"
-	   	android:textSize="26sp"
-	   	android:layout_gravity="center"
-	   	style="@style/red_button" />
+    
+    <LinearLayout 
+        android:id="@+id/super_decrement_wrapper"
+        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        
+        <View
+            android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:layout_weight="1" />
+        
+        <Button 
+	        android:id="@+id/super_decrement"
+	        android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:layout_weight="1"
+	        android:text="-7"
+	        android:textSize="26sp"
+	        android:layout_gravity="center"
+	        style="@style/red_button"
+	        android:layout_margin="5dp"/>
+        
+        <View
+            android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:layout_weight="1" />
+        
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        
+        <Button
+		 	android:id="@+id/increment"
+		   	android:layout_width="match_parent"
+		   	android:layout_height="0dp"
+		   	android:layout_weight="1"
+		  	android:text="+"
+		   	android:textSize="26sp"
+		   	android:layout_gravity="center"
+		   	style="@style/red_button"
+		   	android:layout_margin="5dp" />
+		
+		<EditText
+		    android:id="@+id/counter_holder"
+		    android:layout_width="wrap_content"
+		    android:layout_height="0dp"
+		    android:layout_weight="1"
+		    android:text="1"
+		    android:inputType="number"
+		    android:background="@drawable/default_background"
+		    android:paddingLeft="10dp"
+		    android:paddingRight="10dp"
+		    android:layout_gravity="center"
+		    android:textSize="24sp"
+		    android:gravity="center"
+		    android:textStyle="bold"/>
+		    
+		<Button
+		   	android:id="@+id/decrement"
+		   	android:layout_width="match_parent"
+		   	android:layout_height="0dp"
+		   	android:layout_weight="1"
+		   	android:layout_gravity="center" 
+		   	android:text="-"
+		   	android:textSize="26sp"
+		   	style="@style/red_button"
+		   	android:layout_margin="5dp"/>
+        
+    </LinearLayout>
+    
+	<LinearLayout 
+	    android:id="@+id/super_increment_wrapper"
+        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        
+        <View
+            android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:layout_weight="1" />
+        
+        <Button 
+	        android:id="@+id/super_increment"
+	        android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:layout_weight="1"
+	        android:text="+7"
+	        android:textSize="26sp"
+	        android:layout_gravity="center"
+	        style="@style/red_button"
+	        android:layout_margin="5dp"/>
+        
+        <View
+            android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:layout_weight="1" />
+        
+    </LinearLayout>
 	
-	<EditText
-	    android:id="@+id/counter_holder"
-	    android:layout_width="wrap_content"
-	    android:layout_height="0dp"
-	    android:layout_weight="1"
-	    android:text="1"
-	    android:inputType="number"
-	    android:background="@drawable/default_background"
-	    android:paddingLeft="10dp"
-	    android:paddingRight="10dp"
-	    android:layout_gravity="center"
-	    android:textSize="24sp"
-	    android:gravity="center"
-	    android:textStyle="bold"/>
-	    
-	<Button
-	   	android:id="@+id/decrement"
-	   	android:layout_width="match_parent"
-	   	android:layout_height="0dp"
-	   	android:layout_weight="1"
-	   	android:layout_gravity="center" 
-	   	android:text="-"
-	   	android:textSize="26sp"
-	   	style="@style/red_button"/>
-
 </merge>

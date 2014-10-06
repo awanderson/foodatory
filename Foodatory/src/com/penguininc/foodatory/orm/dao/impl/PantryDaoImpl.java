@@ -13,6 +13,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.penguininc.foodatory.orm.dao.PantryDao;
 import com.penguininc.foodatory.orm.object.Pantry;
+import com.penguininc.foodatory.orm.object.Product;
 
 public class PantryDaoImpl extends BaseDaoImpl<Pantry, Integer>
 	implements PantryDao {
@@ -44,15 +45,25 @@ public class PantryDaoImpl extends BaseDaoImpl<Pantry, Integer>
 				// first check if our product still exists
 				if(pantry.getProduct() == null) {
 					this.delete(pantry);
-					Log.d(DEBUG_TAG, "product object null");
 				} else if(pantry.getProduct().getType() == type) {
-					// right type, now check if it's within our retention time
-					int days = (int)( (Calendar.getInstance().getTime().getTime()
-							- pantry.getDateExpire().getTime())
-							/ (1000 * 60 * 60 * 24));
-					if(retention != -1 && days < retention) {
+					// if we have a fresh food we have to check if its
+					// within our retention
+					if(retention != -1 && pantry.getProduct().getType()
+							== Product.FRESH_FOOD) {
+						// right type, now check if it's within our retention time
+						int days = (int)( (Calendar.getInstance().getTime().getTime()
+								- pantry.getDateExpire().getTime())
+								/ (1000 * 60 * 60 * 24));
+						
+						Log.d(DEBUG_TAG, "retention = " + retention + " days = " + days);
+						
+						if(days <= (retention+1)) {
+							pantries.add(pantry);
+						}
+					} else {
 						pantries.add(pantry);
 					}
+					
 					
 				}
 			}

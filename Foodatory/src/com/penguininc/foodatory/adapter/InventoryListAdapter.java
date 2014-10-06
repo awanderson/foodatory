@@ -36,11 +36,6 @@ public class InventoryListAdapter extends ArrayAdapter<Pantry> {
 	/* We need this to set as the target for the delete dialog */
 	private InventoryListFragment fragment;
 	
-	private static final int DECREMENT = 1;
-	private static final int INCREMENT = 2;
-	private static final int DELETE = 3;
-	private static final int SHOPPING_LIST = 4;
-	
 	public static final String INVENTORY_POSITION = "inventory_position";
 	
 	public class PantryComparator implements Comparator<Pantry> {
@@ -100,17 +95,27 @@ public class InventoryListAdapter extends ArrayAdapter<Pantry> {
 			int pR = mHolder.inventory_qty.getPaddingRight();
 			int pB = mHolder.inventory_qty.getPaddingBottom();
 			if(pantry.getProduct().getType() == Product.FRESH_FOOD) {
-				mHolder.inventory_expire_date.setText("Expires: " + days + " days");
-				if(days < 1) {
-					mHolder.inventory_qty.setBackgroundResource(R.drawable.button_black_background);
-				} else if(days == 1) {
-					mHolder.inventory_qty.setBackgroundResource(R.drawable.button_red_background);
-				} else if (days == 2) {
-					mHolder.inventory_qty.setBackgroundResource(R.drawable.button_orange_background);
-				} else if (days == 3) {
-					mHolder.inventory_qty.setBackgroundResource(R.drawable.button_yellow_background);
+				if(days == 1) {
+					mHolder.inventory_expire_date.setText("Expires tomorrow");
+				} else if (days == 0) {
+					mHolder.inventory_expire_date.setText("Expires today");
+				} else if (days == -1) {
+					mHolder.inventory_expire_date.setText("Expired yesterday");
+				} else if (days < -1) {
+					mHolder.inventory_expire_date.setText("Expired: " + days + " days ago");
 				} else {
-					mHolder.inventory_qty.setBackgroundResource(R.drawable.button_green_background);
+					mHolder.inventory_expire_date.setText("Expires: " + days + " days");
+				}
+				if(days < 0) {
+					mHolder.inventory_qty.setBackgroundResource(R.drawable.bg_circle_black);
+				} else if(days == 0) {
+					mHolder.inventory_qty.setBackgroundResource(R.drawable.bg_circle_red);
+				} else if (days == 1) {
+					mHolder.inventory_qty.setBackgroundResource(R.drawable.bg_circle_orange);
+				} else if (days == 2) {
+					mHolder.inventory_qty.setBackgroundResource(R.drawable.bg_circle_yellow);
+				} else {
+					mHolder.inventory_qty.setBackgroundResource(R.drawable.bg_circle_green);
 				}
 			} else {
 				// set dry goods to green background

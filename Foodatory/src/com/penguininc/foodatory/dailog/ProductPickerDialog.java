@@ -1,5 +1,6 @@
 package com.penguininc.foodatory.dailog;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
@@ -37,9 +38,12 @@ public class ProductPickerDialog extends OrmLiteDialogFragment {
 	EditText mFilter;
 	TextWatcher mTextWatcher;
 	int mNewProductRequestCode;
+	List<Product> removeProducts;
 	
 	//used to set the request code if new product is set
 	public final static String NEW_PRODUCT_REQUEST_CODE_KEY = "new_product_key";
+	
+	private final static String DEBUG_TAG = "ProductPickerDialog";
 	
 	public ProductPickerDialog() {
 		
@@ -83,6 +87,10 @@ public class ProductPickerDialog extends OrmLiteDialogFragment {
 		RuntimeExceptionDao<Product, Integer> productDao = getHelper()
 				.getProductRuntimeExceptionDao();
 		List<Product> products = productDao.queryForAll();
+		if(removeProducts != null) {
+			Log.d(DEBUG_TAG, "removeProducts length = " + removeProducts.size());
+			products = removeProducts(products);
+		}
 		adapter = new SimpleProductListAdapter(getActivity(), products);
 		listview.setEmptyView(emptyView);
 		listview.setAdapter(adapter);
@@ -122,5 +130,40 @@ public class ProductPickerDialog extends OrmLiteDialogFragment {
 		
 		
 		return view;
+	}
+	
+	/**
+	 * This function will remove all the products
+	 * in the list from the products it displays
+	 * to the user
+	 * @param products list of products you don't
+	 * want displayed to the user
+	 */
+	public void setRemoveProducts(List<Product> products) {
+		// in actuality, we just set the list of products
+		// and we subtract them in onCreate
+		removeProducts = products;
+	}
+	
+	/**
+	 * Quick and dirty function that removes
+	 * all products in removeProducts from our
+	 * "good" list of products. Bad efficiency,
+	 * will need to be updated
+	 */
+	private List<Product> removeProducts(List<Product> products) {
+		List<Product> goodProducts = new ArrayList<Product>();
+		for(Product product : products) {
+			boolean goodProduct = true;
+			for(Product badProduct : removeProducts) {
+				if(product.getId() == badProduct.getId()) {
+					goodProduct = false;
+				}
+			}
+			if(goodProduct) {
+				goodProducts.add(product);
+			}
+		}
+		return goodProducts;
 	}
 }

@@ -50,6 +50,8 @@
             android:name="com.penguininc.foodatory.EditRecipeActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"/>
+        
+        <service android:name="com.penguininc.foodatory.service.FreshFoodCheckerService" />
     </application>
 
 </manifest>

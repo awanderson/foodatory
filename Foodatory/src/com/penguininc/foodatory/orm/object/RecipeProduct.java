@@ -13,7 +13,7 @@ import com.penguininc.foodatory.orm.dao.impl.RecipeProductDaoImpl;
  * ORMLite object class
  * 
  * Used to relate products and recipes, so we know
- * a product is in a recipe
+ * a product is in a recipe and how much
  * 
  * @author Alec Anderson
  *
@@ -32,18 +32,19 @@ public class RecipeProduct implements Serializable{
 	 */
 	public final static String KEY = "recipe_product_key";
 	
-	@DatabaseField(generatedId = true)
+	@DatabaseField(columnName="recipe_product_id",
+			generatedId = true)
 	int id;
 	
-	@DatabaseField
+	@DatabaseField(columnName="product_qty")
 	int product_qty;
 	
-	@DatabaseField(canBeNull = false, foreign = true,
-			foreignAutoRefresh = true)
+	@DatabaseField(columnName = "product_id", canBeNull = false,
+			foreign = true, foreignAutoRefresh = true)
 	Product product;
 	
-	@DatabaseField(canBeNull = false, foreign = true,
-			foreignAutoRefresh = true)
+	@DatabaseField(columnName = "recipe_id", canBeNull = false,
+			foreign = true, foreignAutoRefresh = true)
 	Recipe recipe;
 	
 	public RecipeProduct() {

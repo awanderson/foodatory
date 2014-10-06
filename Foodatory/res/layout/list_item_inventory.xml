@@ -6,9 +6,8 @@
    
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/inventory_main_content_wrapper"
-        android:paddingBottom="8dp"
         android:paddingRight="8dp"
         android:paddingLeft="8dp">
         
@@ -28,14 +27,12 @@
     
 	   <TextView
 		    android:id="@+id/inventory_qty"
-		    android:layout_width="50dp"
-		    android:layout_height="wrap_content"
+		    android:layout_width="@dimen/default_circle_size"
+		    android:layout_height="@dimen/default_circle_size"
 		    android:textSize="22sp"
-		    android:padding="10dp"
 		    android:textColor="@android:color/white"
 		    android:layout_gravity="center"
 		    android:layout_alignParentRight="true" 
-		    android:layout_marginRight="5dp"
 		    android:gravity="center"
 		    android:layout_centerVertical="true"/>
         

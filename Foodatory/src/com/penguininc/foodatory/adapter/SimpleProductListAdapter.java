@@ -1,6 +1,8 @@
 package com.penguininc.foodatory.adapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import android.app.Activity;
@@ -27,6 +29,7 @@ public class SimpleProductListAdapter extends ArrayAdapter<Product>
 	public SimpleProductListAdapter(Context context, List<Product> products) {
 		super(context, R.layout.list_item_dialog_product, products);
 		this.context = context;
+		Collections.sort(products, new ProductListAdapterComparator());
 		this.products = products;
 		this.original_products = new ArrayList<Product>(products);
 	}
@@ -46,6 +49,7 @@ public class SimpleProductListAdapter extends ArrayAdapter<Product>
 		mProductName.setText(products.get(position).getProductName());
 		//mProductFreshness.setText("Freshness Length: " + String.valueOf(products.get(position).getFreshLength()));
 		 
+		
 		return convertView;
 	}
 	
@@ -96,6 +100,24 @@ public class SimpleProductListAdapter extends ArrayAdapter<Product>
 	             
 	        }
 		};
+	}
+	
+	@Override
+	public void add(Product product) {
+		super.add(product);
+		Collections.sort(products, new ProductListAdapterComparator());
+	}
+	
+	public class ProductListAdapterComparator
+			implements Comparator<Product> {
+		
+		@Override
+		public int compare(Product p1, Product p2) {
+			return p1.getProductName().compareTo(
+					p2.getProductName());
+					
+		}
+		
 	}
 	
 }

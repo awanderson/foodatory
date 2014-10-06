@@ -1,11 +1,14 @@
 package com.penguininc.foodatory.adapter;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,12 +28,16 @@ public class ShoppingListAdapter extends ArrayAdapter<ShoppingListItem> {
 	private List<ShoppingListItem> shoppingList;
 	private ShoppingListFragment fragment;
 	
-	public final static String SHOPPING_LIST_ITEM_POSITION = "shopping_list_item_position";
+	public final static String SHOPPING_LIST_ITEM_POSITION = 
+			"shopping_list_item_position";
+	
+	public final static String DEBUG_TAG = "ShoppingListAdapter";
 	
 	public ShoppingListAdapter(Context context, List<ShoppingListItem> shoppingList,
 			ShoppingListFragment fragment) {
 		super(context, R.layout.list_item_shopping_item, shoppingList);
 		this.context = context;
+		Collections.sort(shoppingList, new ShoppingListAdapterComparator());
 		this.shoppingList = shoppingList;
 		this.fragment = fragment;
 	}
@@ -56,24 +63,21 @@ public class ShoppingListAdapter extends ArrayAdapter<ShoppingListItem> {
 		
 		mHolder.shoppingListName.setText(s.getProduct().getProductName());
 		mHolder.shoppingListQuantity.setText(String.valueOf(s.getQty()));
-		
-		/* Loads previoius state of checked */
-		if(mHolder.isChecked) {
-			checkViewHolder(mHolder, position);
-		} else {
-			uncheckViewHolder(mHolder, position);
-		}
-		//duplicate final object for onclicklistener
-		final ViewHolder viewHolder = mHolder;
-		final int finalPosition = position;
+		// do this so we can get our shopping list item in onClick
+		mHolder.shoppingListChecked.setTag(s);
+		mHolder.shoppingListChecked.setChecked(s.isChecked());
 		mHolder.shoppingListChecked.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				if(viewHolder.isChecked) {
-					uncheckViewHolder(viewHolder, finalPosition);
+				CheckedTextView ctv = (CheckedTextView) v;
+				ShoppingListItem s = (ShoppingListItem)ctv.getTag();
+				if(s.isChecked()) {
+					ctv.setChecked(false);
+					s.setChecked(false);
 				} else {
-					checkViewHolder(viewHolder, finalPosition);
+					ctv.setChecked(true);
+					s.setChecked(true);
 				}
 			}
 		});
@@ -99,24 +103,27 @@ public class ShoppingListAdapter extends ArrayAdapter<ShoppingListItem> {
 	public static class ViewHolder {
 		public TextView shoppingListName, shoppingListQuantity, removeItem;
 		public CheckedTextView shoppingListChecked;
-		public boolean isChecked;
-	}
-	
-	public void checkViewHolder(ViewHolder viewHolder, int position) {
-		viewHolder.isChecked = true;
-		viewHolder.shoppingListChecked.setChecked(true);
-		ShoppingListItem s = shoppingList.get(position);
-		s.setChecked(true);
-	}
-	
-	public void uncheckViewHolder(ViewHolder viewHolder, int position) {
-		viewHolder.isChecked = false;
-		viewHolder.shoppingListChecked.setChecked(false);
-		ShoppingListItem s = shoppingList.get(position);
-		s.setChecked(false);
 	}
 	
 	public List<ShoppingListItem> getShoppingList() {
 		return shoppingList;
 	}
+	
+	@Override
+	public void add(ShoppingListItem item) {
+		super.add(item);
+		Collections.sort(shoppingList, new ShoppingListAdapterComparator());
+	}
+	
+	public class ShoppingListAdapterComparator
+			implements Comparator<ShoppingListItem>{
+		
+		@Override
+	    public int compare(ShoppingListItem s1, ShoppingListItem s2) {
+	        return s1.getProduct().getProductName().compareTo(
+	        		s2.getProduct().getProductName());
+	    }
+	}
+	
+	
 }

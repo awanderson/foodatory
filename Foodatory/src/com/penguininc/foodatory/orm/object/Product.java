@@ -35,15 +35,15 @@ public class Product
 	 */
 	public final static String KEY = "PRODUCT_KEY";
 	
-	@DatabaseField(generatedId = true)
+	@DatabaseField(columnName="product_id", generatedId = true)
 	int id;
-	@DatabaseField
-	String productName;
-	@DatabaseField
+	@DatabaseField(columnName="product_name")
+	String product_name;
+	@DatabaseField(columnName="qty")
 	int qty;
-	@DatabaseField
-	int freshLength;
-	@DatabaseField
+	@DatabaseField(columnName="fresh_length")
+	int fresh_length;
+	@DatabaseField(columnName="type")
 	int type;
 	
 	/*
@@ -80,7 +80,7 @@ public class Product
 	 * @return the product_name
 	 */
 	public String getProductName() {
-		return productName;
+		return product_name;
 	}
 
 
@@ -88,7 +88,7 @@ public class Product
 	 * @param product_name the product_name to set
 	 */
 	public void setProductName(String productName) {
-		this.productName = productName;
+		this.product_name = productName;
 	}
 
 
@@ -112,7 +112,7 @@ public class Product
 	 * @return the fresh_length
 	 */
 	public int getFreshLength() {
-		return freshLength;
+		return fresh_length;
 	}
 
 
@@ -120,7 +120,7 @@ public class Product
 	 * @param freshLength the fresh_length to set
 	 */
 	public void setFreshLength(int freshLength) {
-		this.freshLength = freshLength;
+		this.fresh_length = freshLength;
 	}
 
 

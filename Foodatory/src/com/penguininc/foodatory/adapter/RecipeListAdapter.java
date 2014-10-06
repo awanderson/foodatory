@@ -1,6 +1,8 @@
 package com.penguininc.foodatory.adapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -19,6 +21,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,6 +39,17 @@ import com.penguininc.foodatory.R;
 import com.penguininc.foodatory.orm.object.Recipe;
 import com.penguininc.foodatory.utilities.ImageRounder;
 
+/**
+ * 
+ * RecipeListAdapter used to display a list
+ * of recipes. Add method will probably have
+ * unexpected bugs because of sorting. Will need
+ * to revisit if want to use that function
+ * 
+ * @author Alec Anderson
+ *
+ */
+
 public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 	
 	public final static String DEBUG_TAG = "RecipeListAdapter";
@@ -48,6 +64,7 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 	public RecipeListAdapter(Context context, List<Recipe> recipes) {
 		super(context, R.layout.list_item_recipe, recipes);
 		this.context = context;
+		Collections.sort(recipes, new RecipeListAdapterComparator());
 		this.recipes = recipes;
 		thumbnails = new ArrayList<ImageView>();
 		imageNames = new ArrayList<String>();
@@ -167,12 +184,39 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 					new SimpleImageLoadingListener() {
 				
 				@Override
-			    public void onLoadingComplete(String imageUri, View view, Bitmap bitmap) {
+			    public void onLoadingComplete(String imageUri, View view,
+			    		Bitmap bitmap) {
+					final ImageView imageView = thumbnails.get(position);
+					imageView.setVisibility(View.INVISIBLE);
+					imageView.setImageBitmap(bitmap);
+					AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
+		    		anim.setDuration(500);
+		    		anim.setAnimationListener(new AnimationListener() {
+						
+						@Override
+						public void onAnimationStart(Animation animation) {
+							// TODO Auto-generated method stub
+							
+						}
+						
+						@Override
+						public void onAnimationRepeat(Animation animation) {
+							// TODO Auto-generated method stub
+							
+						}
+						
+						@Override
+						public void onAnimationEnd(Animation animation) {
+							imageView.setVisibility(View.VISIBLE);
+						}
+					});
+		    		imageView.startAnimation(anim);
 					thumbnails.get(position).setImageBitmap(bitmap);
 				}
 				
 				@Override
-				public void onLoadingFailed(String iamgeUri, View view, FailReason failReason) {
+				public void onLoadingFailed(String iamgeUri, View view,
+						FailReason failReason) {
 				}
 				
 			});
@@ -217,6 +261,26 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 		TextView recipe_name;
 		ImageView thumbnail;
 		int color;
+	}
+	
+	/**
+	 * This method probably has unexpected bugs because 
+	 * it doesn't re-sort or re-populate our other 
+	 * lists
+	 */
+	@Override
+	public void add(Recipe recipe) {
+		super.add(recipe);
+		Collections.sort(recipes, new RecipeListAdapterComparator());
+	}
+	
+	public class RecipeListAdapterComparator
+			implements Comparator<Recipe> {
+		
+		@Override
+		public int compare(Recipe r1, Recipe r2) {
+			return r1.getName().compareTo(r2.getName());
+		}
 	}
 	
 }
