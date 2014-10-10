@@ -119,7 +119,7 @@ public class InventoryListAdapter extends ArrayAdapter<Pantry> {
 				}
 			} else {
 				// set dry goods to green background
-				mHolder.inventory_qty.setBackgroundResource(R.drawable.button_green_background);
+				mHolder.inventory_qty.setBackgroundResource(R.drawable.bg_circle_green);
 			}
 				
 			mHolder.inventory_qty.setPadding(pL, pT, pR, pB);

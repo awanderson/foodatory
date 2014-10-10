@@ -116,9 +116,14 @@ public class CounterView extends LinearLayout {
 	
 	public void setSuperValues(final int incrementer, final int decrementer) {
 		
+		// no point in haveing a super incrementer increase by 1
+		if(incrementer <= 1 || decrementer <= 1) {
+			useThirdWidth();
+			return;
+		}
 		// change the text of the buttons first
 		superIncrementer.setText("+" + String.valueOf(incrementer));
-		superDecrementer.setText("+" + String.valueOf(decrementer));
+		superDecrementer.setText("-" + String.valueOf(decrementer));
 		
 		// set our on click listeners
 		superIncrementer.setOnClickListener(new OnClickListener() {

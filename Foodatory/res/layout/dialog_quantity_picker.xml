@@ -1,27 +1,32 @@
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res/com.penguininc.foodatory"
     android:layout_width="match_parent"
     android:layout_margin="20dp"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
     
     <TextView
-        android:text="Pick a Quantity"
-        style="@style/blue_dialog_title"/>
+        android:id="@+id/dialog_title"        android:text="Pick a Quantity"
+        style="@style/blue_dialog_title"
+        android:layout_alignParentTop="true"/>
     
     <com.penguininc.foodatory.view.CounterView
         android:id="@+id/quantity"
         android:layout_gravity="center"
+        android:layout_centerHorizontal="true"
         android:layout_width="200dp"
         android:layout_height="180dp"
-        custom:startingValue="1" />
+        custom:startingValue="1"
+        android:layout_below="@id/dialog_title" />
         
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/default_vertical_margin"
-        android:orientation="horizontal" >
+        android:layout_marginLeft="@dimen/default_horizontal_margin"
+        android:layout_marginRight="@dimen/default_horizontal_margin"
+        android:orientation="horizontal"
+        android:layout_below="@id/quantity" >
         
         <Button
         	android:id="@+id/save" 
@@ -29,6 +34,7 @@
         	android:layout_weight="1"
         	android:text="Save"
         	android:layout_marginRight="0dp"
+        	android:layout_marginLeft="0dp"
         	style="@style/blue_button"/>
         
         <Button
@@ -37,9 +43,10 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:text="Delete"
+            android:layout_marginRight="0dp"
             android:layout_marginLeft="0dp"
             style="@style/red_button"/>
         
     </LinearLayout>
     
-</LinearLayout>
+</RelativeLayout>

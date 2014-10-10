@@ -110,6 +110,8 @@ public class ShoppingListFragment extends HomeScreenFragment {
 					bundle.putInt(QuantityPickerDialog.SUPER_DECREMENTER_KEY, 
 							newProduct.getQty());
 				}
+				bundle.putInt(QuantityPickerDialog.STARTING_VALUE_KEY, 
+						newProduct.getQty());
 				DialogFragment frag = new QuantityPickerDialog();
 				frag.setArguments(bundle);
 				frag.setTargetFragment(this, NEW_SHOPPING_LIST_ITEM_WITH_QUANITY);

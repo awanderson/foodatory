@@ -114,7 +114,7 @@ public class InventoryFragment extends HomeScreenFragment {
 				Bundle bundle = data.getExtras();
 				newProduct = (Product) bundle.getSerializable(Product.KEY);
 				DialogFragment frag = new QuantityPickerDialog();
-				bundle.putInt(QuantityPickerDialog.STARTING_VALUE_KEY, 1);
+				bundle.putInt(QuantityPickerDialog.STARTING_VALUE_KEY, newProduct.getQty());
 				bundle.putBoolean(QuantityPickerDialog.DELETE_TOGGLE_KEY, false);
 				bundle.putInt(QuantityPickerDialog.SAVE_TARGET_KEY, Activity.RESULT_OK);
 				// set our super incrementer and decrementer only if
