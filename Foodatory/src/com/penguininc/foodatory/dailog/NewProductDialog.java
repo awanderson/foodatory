@@ -34,8 +34,6 @@ import com.penguininc.foodatory.view.ProductTypeView;
 public class NewProductDialog extends OrmLiteDialogFragment
 	implements BasicFragmentInterface{
 
-	private static final int NEW_PRODUCT = 0;
-	
 	EditText mProductName;
 	CounterView mProductQty;
 	CounterView mProductFreshness;

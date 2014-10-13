@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
@@ -17,6 +18,11 @@ public abstract class BasicActivity
 	
 	private Fragment mFrag;
 	public final static String EMBEDDED = "embedded";
+	
+	// if this variable is true, will print debug logs
+	public final static boolean DEBUG_MODE = true;
+	
+	private final static String DEBUG_TAG = "BasicActivity";
 	
 	protected abstract Fragment createFragment();
 	
@@ -53,7 +59,29 @@ public abstract class BasicActivity
 		getActionBar().setTitle(title);
 	}
 	
-	public void noButton(){}
 	
+	/**
+	 * Prints out debuging message if debugging mode is on
+	 * 
+	 * Use this over Log.d because this allows for removal
+	 * of any logs simply by turning DEBUG_MODE to false
+	 * 
+	 * @param message you want displayed in log
+	 */
+	public static void debugLog(String message) {
+		debugLog(DEBUG_TAG, message);
+	}
 	
+	/**
+	 * Same as debugLog but with an extra debugTag paramter,
+	 * should be used over debugLog(message)
+	 * 
+	 * @param debugTag debug tag you want to display
+	 * @param message you want displayed in log
+	 */
+	public static void debugLog(String debugTag, String message) {
+		if(DEBUG_MODE) {
+			Log.d(debugTag, message);
+		}
+	}
 }

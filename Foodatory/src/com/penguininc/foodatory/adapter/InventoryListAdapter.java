@@ -19,13 +19,20 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.penguininc.foodatory.InventoryListFragment;
 import com.penguininc.foodatory.R;
 import com.penguininc.foodatory.dailog.ConfirmationDialog;
+import com.penguininc.foodatory.dailog.QuantityPickerDialog;
+import com.penguininc.foodatory.framework.BasicActivity;
+import com.penguininc.foodatory.orm.DatabaseHelper;
 import com.penguininc.foodatory.orm.dao.PantryDao;
 import com.penguininc.foodatory.orm.object.Pantry;
 import com.penguininc.foodatory.orm.object.Product;
+import com.penguininc.foodatory.orm.object.ShoppingListItem;
 
 public class InventoryListAdapter extends ArrayAdapter<Pantry> {
 	
@@ -35,8 +42,12 @@ public class InventoryListAdapter extends ArrayAdapter<Pantry> {
 	PantryDao pantryDao;
 	/* We need this to set as the target for the delete dialog */
 	private InventoryListFragment fragment;
+	private DatabaseHelper databaseHelper;
+	private RuntimeExceptionDao<ShoppingListItem, Integer> shoppingListDao;
 	
 	public static final String INVENTORY_POSITION = "inventory_position";
+	
+	private static final String DEBUG_TAG = "InventoryListAdapter";
 	
 	public class PantryComparator implements Comparator<Pantry> {
 		
@@ -199,6 +210,48 @@ public class InventoryListAdapter extends ArrayAdapter<Pantry> {
 			
 			@Override
 			public void onClick(View v) {
+				Pantry pantry = pantries.get(p);
+				if(shoppingListDao == null) {
+					if (databaseHelper == null) {
+				        databaseHelper =
+				            OpenHelperManager.getHelper(context, DatabaseHelper.class);
+				    }
+					shoppingListDao = databaseHelper
+							.getShoppingListRuntimeExceptionDao();
+				}
+				List<ShoppingListItem> shoppingList = shoppingListDao.queryForAll();
+				// go through shopping list and see if item is already there
+				for(ShoppingListItem item : shoppingList) {
+					if(item.getProduct().getId() == pantry.getProduct().getId()) {
+						// display toast to user and don't add to shopping list
+						Toast.makeText(context, "Item is already in shopping list",
+								Toast.LENGTH_LONG).show();
+						return;
+					}
+				}
+				// doesn't exist in shopping list, display quantity dialog
+				DialogFragment frag = new QuantityPickerDialog();
+				Bundle bundle = new Bundle();
+				bundle.putInt(QuantityPickerDialog.STARTING_VALUE_KEY, 
+						pantry.getProduct().getQty());
+				bundle.putBoolean(QuantityPickerDialog.DELETE_TOGGLE_KEY, false);
+				bundle.putInt(QuantityPickerDialog.SAVE_TARGET_KEY, Activity.RESULT_OK);
+				// set our super incrementer and decrementer only if
+				// we don't have a condiment
+				if(pantry.getProduct().getType() != Product.CONDIMENT) {
+					bundle.putInt(QuantityPickerDialog.SUPER_INCREMENTER_KEY, 
+							pantry.getProduct().getQty());
+					bundle.putInt(QuantityPickerDialog.SUPER_DECREMENTER_KEY, 
+							pantry.getProduct().getQty());
+				}
+				bundle.putSerializable(Product.KEY, pantry.getProduct());
+				frag.setArguments(bundle);
+				frag.setTargetFragment(fragment, 
+						InventoryListFragment.NEW_SHOPPING_LIST_ITEM);
+				frag.show(fragment.getFragmentManager().beginTransaction(),
+						"New Shopping List with Quantity");
+					
+				
 			}
 		});
 		

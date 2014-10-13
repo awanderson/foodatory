@@ -7,7 +7,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,7 +68,6 @@ public class SimpleProductListAdapter extends ArrayAdapter<Product>
 	             
 				// Now we have to inform the adapter about the new list filtered
 				products = (ArrayList<Product>) results.values;
-				Log.d("ProductListAdapter", "result lenght = " + products.size());
 				notifyDataSetChanged();
 	        }
 

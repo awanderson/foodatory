@@ -10,7 +10,6 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -197,7 +196,6 @@ public class ShoppingListFragment extends HomeScreenFragment {
 		for(int i = 0; i < adapter.getCount(); i++) {
 			products.add(adapter.getItem(i).getProduct());
 		}
-		Log.d(DEBUG_TAG, "product length = " + products.size());
 		return products;
 	}
 }

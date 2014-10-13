@@ -77,7 +77,6 @@ public class EditRecipeFragment extends BasicFragment {
 		
 		Bundle bundle = getArguments();
 		mRecipe = (Recipe)bundle.getSerializable(Recipe.KEY);
-		Log.d(DEBUG_TAG, "color = " + mRecipe.getColor());
 		mRecipeName = (EditText)view.findViewById(R.id.recipe_name);
 		
 		// get our image loader
@@ -95,7 +94,6 @@ public class EditRecipeFragment extends BasicFragment {
 			@Override
 			public void onClick(View v) {
 				dispatchTakePictureIntent();
-				Log.d("EditRecipeFragment", "view clicked");
 			}
 		});
 		
@@ -138,7 +136,6 @@ public class EditRecipeFragment extends BasicFragment {
 
 		    @Override
 		    public void onGlobalLayout() {
-		    	Log.d("EditRecipeFragment", "image height = " + mImageView.getHeight());
 		    	setPic();
 		        ViewTreeObserver obs = mImageView.getViewTreeObserver();
 
@@ -158,7 +155,6 @@ public class EditRecipeFragment extends BasicFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.d(DEBUG_TAG, "in on resume");
 		// load directions
 		mDirectionFrag = new RecipeDirectionFragment();
 		mDirectionFrag.setArguments(getArguments());
@@ -179,7 +175,6 @@ public class EditRecipeFragment extends BasicFragment {
 		String recipeName = mRecipeName.getText().toString();
 		mRecipe.setName(recipeName);
 		mRecipe.setImage(mCurrentPhotoPath);
-		Log.d(DEBUG_TAG, "recipe color = " + mRecipe.getColor());
 		if(mRecipeDao == null) {
 			mRecipeDao = getHelper().getRecipeRuntimeExceptionDao();
 		}
@@ -224,7 +219,6 @@ public class EditRecipeFragment extends BasicFragment {
 	        try {
 	            photoFile = createImageFile();
 	        } catch (IOException ex) {
-	        	Log.d("EditRecipeFragment", "Couldn't create photo");
 	            // Error occurred while creating the File
 	        }
 	        // Continue only if the File was successfully created
@@ -294,7 +288,6 @@ public class EditRecipeFragment extends BasicFragment {
 					});
 		    		mImageView.startAnimation(anim);
 		    		if(takingImage) {
-		    			Log.d(DEBUG_TAG, "takingImage is true");
 						takingImage = false;
 						ImageScaler.scaleImage(bitmap, targetW, targetH, mCurrentPhotoPath);
 					}

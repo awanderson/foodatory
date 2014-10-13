@@ -54,18 +54,6 @@ public class NewDirectionDialog extends DialogFragment {
 			}
 		});
 		
-		/*
-		Button cancel = (Button)view.findViewById(R.id.cancel);
-		
-		cancel.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_CANCELED, null);
-				dismiss();
-			}
-		});
-		*/
 		return view;
 		
 	}

@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -74,7 +73,6 @@ public class ProductPickerDialog extends OrmLiteDialogFragment {
 			@Override
 			public void onTextChanged(CharSequence cs, int arg1, int arg2,
 					int arg3) {
-				Log.d("ProductPickerDialog", "filter applied");
 				adapter.getFilter().filter(cs.toString());
 			}
 			
@@ -88,7 +86,6 @@ public class ProductPickerDialog extends OrmLiteDialogFragment {
 				.getProductRuntimeExceptionDao();
 		List<Product> products = productDao.queryForAll();
 		if(removeProducts != null) {
-			Log.d(DEBUG_TAG, "removeProducts length = " + removeProducts.size());
 			products = removeProducts(products);
 		}
 		adapter = new SimpleProductListAdapter(getActivity(), products);

@@ -102,4 +102,9 @@
 	
 	<color name="black_button">#1a3a1a</color>
 	<color name="black_button_pressed">#000000</color>
+	
+	<color name="expandable_submenu">#272727</color>
+	
+	<drawable name="expandable_submenu">#272727</drawable>
+	<drawable name="expandable_submenu_pressed">#444444</drawable>
 </resources>

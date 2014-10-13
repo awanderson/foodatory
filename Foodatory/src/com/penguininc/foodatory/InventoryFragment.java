@@ -75,7 +75,6 @@ public class InventoryFragment extends HomeScreenFragment {
 		
 		tabs.setupTabs(getActivity());
 		
-		Log.d("InventoryFragment", "onCreateView");
 		
 		return v;
 		
@@ -136,7 +135,8 @@ public class InventoryFragment extends HomeScreenFragment {
 				
 				// Create a new pantry and populate its fields
 				Pantry pantry = new Pantry();
-				pantry.setQty(data.getIntExtra(QuantityPickerDialog.CHOSEN_QUANTITY, -1));
+				pantry.setQty(data.getIntExtra(
+						QuantityPickerDialog.CHOSEN_QUANTITY, -1));
 				Date date = new Date();
 				pantry.setDateAdded(date);
 				

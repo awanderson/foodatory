@@ -14,14 +14,17 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.penguininc.foodatory.adapter.InventoryListAdapter;
 import com.penguininc.foodatory.adapter.InventoryListAdapter.ViewHolder;
+import com.penguininc.foodatory.dailog.QuantityPickerDialog;
 import com.penguininc.foodatory.framework.BasicFragment;
 import com.penguininc.foodatory.orm.dao.PantryDao;
 import com.penguininc.foodatory.orm.object.Pantry;
 import com.penguininc.foodatory.orm.object.Product;
+import com.penguininc.foodatory.orm.object.ShoppingListItem;
 
 public class InventoryListFragment extends BasicFragment{
 
@@ -29,7 +32,7 @@ public class InventoryListFragment extends BasicFragment{
 	
 	
 	public final static int DELETE_INVENTORY = 1;
-	
+	public final static int NEW_SHOPPING_LIST_ITEM = 2;
 	
 	private ListView listview;
 	InventoryListAdapter adapter;
@@ -49,7 +52,6 @@ public class InventoryListFragment extends BasicFragment{
 		View view = super.onCreateView(inflater, container, savedInstanceState);
 		
 		mInventoryType = getArguments().getInt(Product.PRODUCT_TYPE, Product.FRESH_FOOD);
-		Log.d(DEBUG_TAG, "type = " + mInventoryType);
 		TextView emptyView = (TextView)view.findViewById(R.id.empty);
 		if(mInventoryType == Product.FRESH_FOOD) {
 			emptyView.setText("You have no Fresh Food!");
@@ -131,6 +133,26 @@ public class InventoryListFragment extends BasicFragment{
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch(requestCode) {
 		
+		// new shopping list item was clicked in our inventory list adapter
+		case NEW_SHOPPING_LIST_ITEM:
+			if(resultCode == Activity.RESULT_OK) {
+				// get our product first
+				Product product = (Product)data.getSerializableExtra(Product.KEY);
+				if(product == null) {
+					return;
+				}
+				ShoppingListItem item = new ShoppingListItem();
+				item.setQty(data.getIntExtra(
+						QuantityPickerDialog.CHOSEN_QUANTITY, -1));
+				item.setProduct(product);
+				item.setChecked(false);
+				RuntimeExceptionDao<ShoppingListItem, Integer> shoppingListDao = 
+						getHelper().getShoppingListRuntimeExceptionDao();
+				shoppingListDao.create(item);
+				Toast.makeText(getActivity(), product.getProductName() + 
+						" added to your shopping list", Toast.LENGTH_SHORT).show();
+				
+			}
 		case DELETE_INVENTORY:
 			if(resultCode == Activity.RESULT_OK) {
 				Pantry pantry = (Pantry)data.getSerializableExtra(Pantry.KEY);

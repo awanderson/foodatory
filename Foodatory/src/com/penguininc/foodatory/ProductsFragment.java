@@ -1,8 +1,5 @@
 package com.penguininc.foodatory;
 
-import java.util.ArrayList;
-
-import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,7 +16,6 @@ import com.penguininc.foodatory.view.TabView;
 
 public class ProductsFragment extends HomeScreenFragment{
 
-	private final static int GET_PRODUCTS = 0;
 	private int saved_tab_state;
 	TabView<ProductListFragment, ProductListFragment, ProductListFragment> tabs;
 	Tab<ProductListFragment> tab1;

@@ -15,7 +15,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,12 +102,10 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 		final int p = position;
 		ViewTreeObserver vto = mHolder.thumbnail.getViewTreeObserver();
 		if(mHolder.thumbnail.getHeight() == 0) {
-			Log.d(DEBUG_TAG, "No height");
 			vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 
 			    @Override
 			    public void onGlobalLayout() {
-			    	Log.d(DEBUG_TAG, "color in global layout = " + recipes.get(position).getColor());
 			    	setPic(p);
 			        ViewTreeObserver obs = thumbnails.get(p).getViewTreeObserver();
 

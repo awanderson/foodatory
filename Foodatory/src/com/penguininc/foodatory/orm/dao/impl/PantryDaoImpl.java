@@ -55,7 +55,6 @@ public class PantryDaoImpl extends BaseDaoImpl<Pantry, Integer>
 								- pantry.getDateExpire().getTime())
 								/ (1000 * 60 * 60 * 24));
 						
-						Log.d(DEBUG_TAG, "retention = " + retention + " days = " + days);
 						
 						if(days <= (retention+1)) {
 							pantries.add(pantry);

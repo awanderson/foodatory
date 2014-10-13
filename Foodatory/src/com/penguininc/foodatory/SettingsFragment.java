@@ -13,7 +13,6 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.penguininc.foodatory.framework.BasicActivity;
 import com.penguininc.foodatory.framework.HomeScreenFragment;
 import com.penguininc.foodatory.service.FreshFoodCheckerService;
 
@@ -136,7 +136,7 @@ public class SettingsFragment extends HomeScreenFragment {
 	 * of NOTIFICATION_FREQUENCY_ARRAY_DAYS or NOTIFICATION_FREQUENCY_ARRAY
 	 */
 	public static void setFoodCheckerNotificationAlarm(Context context, int frequency) {
-		
+		BasicActivity.debugLog("in on setFoodChecker");
 		// get our pending intent
 		Intent foodCheckerIntent = new Intent(context,
 				FreshFoodCheckerService.class);
@@ -150,6 +150,7 @@ public class SettingsFragment extends HomeScreenFragment {
 		// if our frequency is -1, we don't want any notifications
 		// so we can just return
 		if(NOTIFICATION_FREQUENCY_ARRAY_DAYS[frequency] == -1) {
+			BasicActivity.debugLog("returning from setFoodChecker");
 			return;
 		}
 		// set our alarm to go off around 6
@@ -174,10 +175,12 @@ public class SettingsFragment extends HomeScreenFragment {
 		long intervalMillis = (1000*60*60*24)
 				* NOTIFICATION_FREQUENCY_ARRAY_DAYS[frequency];
 		
-		Log.d(DEBUG_TAG, "triggerAtMillis = " + triggerAtMillis);
+		
+		BasicActivity.debugLog(DEBUG_TAG, "cal = " + cal.getTimeInMillis() + " intervel = " + 
+					intervalMillis);
 		
 		// set our alarm
-		alarm.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+		alarm.setRepeating(AlarmManager.RTC_WAKEUP,
 				cal.getTimeInMillis(), intervalMillis, pendingIntent);
 	}
 }

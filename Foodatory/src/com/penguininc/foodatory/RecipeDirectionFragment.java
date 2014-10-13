@@ -8,7 +8,6 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,8 +33,6 @@ public class RecipeDirectionFragment extends BasicFragment {
 	private RuntimeExceptionDao<Direction, Integer> directionDao;
 	
 	private static final int NEW_DIRECTION = 2;
-	
-	private int update_loader_value = 100;
 	
 	private DragSortListView.DropListener onDrop =
 	    new DragSortListView.DropListener() {
@@ -71,7 +68,6 @@ public class RecipeDirectionFragment extends BasicFragment {
 	            }
 	            directionDao.delete(direction);
 	            ListviewUtilities.setListViewHeightBasedOnChildren(listview);
-	            update_loader_value++;
 	            
 	            // Update the count for every element after
 	            List<Direction> directions = adapter.getDirections();
@@ -86,8 +82,6 @@ public class RecipeDirectionFragment extends BasicFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		
-		Log.d("RecipeDirection", "in on create view");
 		
 		View view = super.onCreateView(inflater, container, savedInstanceState);
 		
@@ -195,7 +189,6 @@ public class RecipeDirectionFragment extends BasicFragment {
 						directionDao = getHelper().getDirectionRuntimeExceptionDao();
 					}
 					directionDao.update(direction);
-					update_loader_value++;
 				}
 			}
 		}

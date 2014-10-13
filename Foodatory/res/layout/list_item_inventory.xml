@@ -33,6 +33,8 @@
 		    android:textColor="@android:color/white"
 		    android:layout_gravity="center"
 		    android:layout_alignParentRight="true" 
+		    android:layout_marginBottom="5dp"
+		    android:layout_marginTop = "5dp"
 		    android:gravity="center"
 		    android:layout_centerVertical="true"/>
         
@@ -56,25 +58,29 @@
             android:id="@+id/decrement"
             android:drawableTop="@drawable/ic_action_minus"
             android:text="Decrement"
-            style="@style/expand_text_view" />
+            style="@style/expand_text_view"
+            android:background="@drawable/dark_textview_selector" />
         
         <TextView
             android:id="@+id/increment"
             android:drawableTop="@drawable/ic_action_new"
             android:text="Increment"
-            style="@style/expand_text_view" />
+            style="@style/expand_text_view"
+            android:background="@drawable/dark_textview_selector" />
         
         <TextView
             android:id="@+id/delete"
             android:drawableTop="@drawable/ic_action_discard"
             android:text="Delete"
-            style="@style/expand_text_view" />
+            style="@style/expand_text_view"
+            android:background="@drawable/dark_textview_selector" />
         
         <TextView
             android:id="@+id/shopping_list"
             android:drawableTop="@drawable/ic_action_view_as_list"
             android:text="Shopping List"
-            style="@style/expand_text_view" />
+            style="@style/expand_text_view" 
+            android:background="@drawable/dark_textview_selector" />
         
         
     </LinearLayout>

@@ -8,7 +8,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,7 +70,6 @@ public class DirectionListAdapter extends ArrayAdapter<Direction> {
 	public static void changeCount(View v, int order) {
 		
 		TextView mDirectionOrder = (TextView)v.findViewById(R.id.direction_order);
-		Log.d("DirecitonListAdapter", "changing from " + mDirectionOrder.getText().toString() + " to " + order);
 		mDirectionOrder.setText(String.valueOf(order));
 		
 	}

@@ -39,8 +39,7 @@
     <!-- Background -->
     <item>
 	<shape>
-	   
-        <solid android:color="#272727" />
+        <solid android:color="@color/expandable_submenu" />
 	</shape>
     </item>
 </layer-list>

@@ -5,7 +5,6 @@ import java.util.List;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +37,6 @@ public class ProductListFragment extends BasicFragment {
 		View view = super.onCreateView(inflater, container, savedInstanceState);
 		
 		mProductType = getArguments().getInt(Product.PRODUCT_TYPE, Product.FRESH_FOOD);
-		Log.d("ProductListFragment", "product type = " + mProductType);
 		
 		
 		listview = (ListView)view.findViewById(R.id.listview);

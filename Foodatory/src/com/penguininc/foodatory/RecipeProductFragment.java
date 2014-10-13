@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -119,7 +118,6 @@ public class RecipeProductFragment extends BasicFragment {
 	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.d("recipe product", "in on activity");
 	    switch(requestCode) {
 	    	
 	    // new product
@@ -176,9 +174,7 @@ public class RecipeProductFragment extends BasicFragment {
 	            break;
 	        
 	        case EDIT_PRODUCT:
-	        	Log.d(DEBUG_TAG, "in EDIT_PRODUCT");
 	        	if(resultCode == DELETE_PRODUCT) {
-	        		Log.d(DEBUG_TAG, "in DELETE_PRODUCT");
 	        		RecipeProduct recipeProduct = 
 	        				(RecipeProduct)data.getSerializableExtra(RecipeProduct.KEY);
 	        		if(recipeProductDao == null) {
@@ -189,11 +185,9 @@ public class RecipeProductFragment extends BasicFragment {
 	        		adapter.notifyDataSetChanged();
 	        	
 	        	} else if (resultCode == EDIT_PRODUCT_QUANTITY) {
-	        		Log.d("RecipeProductManager", "right result code");
 	        		RecipeProduct recipeProduct = 
 	        				(RecipeProduct)data.getSerializableExtra(RecipeProduct.KEY);
 	        		
-	        		Log.d(DEBUG_TAG, "RecipeProduct = " + recipeProduct.getProduct().getProductName());
 	        		
 	        		if(recipeProductDao == null) {
 	        			recipeProductDao = getHelper().getRecipeProductRuntimeExceptionDao();

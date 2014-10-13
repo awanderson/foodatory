@@ -15,7 +15,6 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.util.Log;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.penguininc.foodatory.MainActivity;
@@ -41,8 +40,6 @@ public class FreshFoodCheckerService extends Service {
 	@Override
 	public void onCreate() {
 		
-		Log.d(DEBUG_TAG, "in on create");
-		
 		if (databaseHelper == null) {
 	        databaseHelper =
 	            OpenHelperManager.getHelper(this, DatabaseHelper.class);
@@ -57,15 +54,12 @@ public class FreshFoodCheckerService extends Service {
 			
 			PantryDao pantryDao = databaseHelper.getPantryDao();
 			List<Pantry> pantry = pantryDao.queryForType(Product.FRESH_FOOD, retention);
-			Log.d(DEBUG_TAG, "size of list = " + pantry.size());
 			List<Pantry> badPantryItems = new ArrayList<Pantry>();
 			for(Pantry pantryItem : pantry) {
 				// right type, now check if it's within our retention time
 				int days = (int)( ((pantryItem.getDateExpire().getTime())
 						- Calendar.getInstance().getTime().getTime())
 						/ (1000 * 60 * 60 * 24) );
-				Log.d(DEBUG_TAG, pantryItem.getProduct().getProductName()
-						+ " has " + days + " days till it goes bad");
 				
 				// if our food is going bad today
 				if(days < 1) {
